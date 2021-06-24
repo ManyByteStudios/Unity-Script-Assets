@@ -1,0 +1,9 @@
+Please keep in mind that the script and or asset may not be up to date with Unity!
+
+To use this script just simply import it into the project. You can choose to add the script to
+an object and put the RunTimer method in Update and it will work. Alternativly you can create 
+another script which inherit this script. All of the methods are public allowing for ease of access
+and use.
+
+IF the script does not work or you do not wish to download the Custom Attributes simply remove 
+"[ConditionalEnumHide...]" or "[ConditionalHide...]" and it will work.

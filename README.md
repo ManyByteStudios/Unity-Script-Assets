@@ -1,4 +1,4 @@
-# Unity-Superclass
+# Universal-Unity-Scripts
 Universal Unity Scripts
 
 Here you will find the scripts I have created for the various custom attributes that I use, and the scripts that I have created for the Unity Game Engine.

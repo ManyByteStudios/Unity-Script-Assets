@@ -1,10 +1,15 @@
 Please keep in mind that the script and or asset may not be up to date with Unity!
 
-To use this script just simply import it into the project. Inherit the script and all the functions
-are open and ready to be used. This script will require you to overide the start and update functions,
-or you may use the "GravityUpdate" method in late update. The properties will require a scriptable object. 
-There is already a scriptable object script with everything that is need for the primary script. 
-Create a scriptable object and referance it in the inspector with the desired script.
+To use this script just simply import the script into your project. You can choose
+to have multiple objects with the same script or use inheritance to have multiple
+versions of the script. To inherit the scrip simply replace "MonoBehaviour" with
+this script's class name, "GravityManipulator" or "GravityBody".
+
+The Gravity Body script should be placed on the object that you wish to be affected
+by gravity.
+
+The Gravity Manipulator script should be placed on the object that you wish to affect
+other objects.
 
 IF the script does not work or you do not wish to download the Custom Attributes simply remove 
 the various custom attributes and the code will run fine.

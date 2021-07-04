@@ -1,9 +1,0 @@
-Please keep in mind that the script and or asset may not be up to date with Unity!
-
-To use this script just simply import it into the project. Inherit the script and all the functions
-are open and ready to be used. The properties will require a scriptable object. There is already a
-scriptable object script with everything that is need for the primary script. Create a scriptable object
-and referance it in the inspector with the desired script.
-
-IF the script does not work or you do not wish to download the Custom Attributes simply remove 
-the various custom attributes and the code will run fine.

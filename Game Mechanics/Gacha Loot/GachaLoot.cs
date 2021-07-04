@@ -9,8 +9,17 @@ using UnityEngine;
 */
 
 public class GachaLoot : MonoBehaviour {
+    #region Gacha Loot Properties
     [Header("Loot Properties")]
-    [SerializeField] GachaLootProperties gachaLootProperties = null;
+    [SerializeField] LootProperties[] lootTable = null;
+
+    [System.Serializable]
+    public class LootProperties {
+        public string LootCatagory = null;
+        [AbsoluteValue()] public int LootChance = 0;
+        public GameObject[] LootRewards = null;
+    }
+    #endregion
 
     // This method can be called from another script to generate the loot drop
     public GameObject[] GenerateLoot(int NumberOfRewards) {
@@ -18,8 +27,8 @@ public class GachaLoot : MonoBehaviour {
         GameObject[] GeneratedLoot = null;
 
         // Creating a poll of numbers for the total chance of winning any loot
-        for (int i = 0; i < gachaLootProperties.LootTable.Length; i++) {
-            MaxLootPool += gachaLootProperties.LootTable[i].LootChance;
+        for (int i = 0; i < lootTable.Length; i++) {
+            MaxLootPool += lootTable[i].LootChance;
         }
 
         // Choosing the loot reward
@@ -29,9 +38,9 @@ public class GachaLoot : MonoBehaviour {
             int LastMinNumber = 0;
             int LastMaxNumber = 0;
 
-            for (int y = 0; y < gachaLootProperties.LootTable.Length; y++) {
+            for (int y = 0; y < lootTable.Length; y++) {
                 LastMinNumber = LastMaxNumber;
-                LastMaxNumber += gachaLootProperties.LootTable[y].LootChance;
+                LastMaxNumber += lootTable[y].LootChance;
 
                 if (TierNumber > LastMinNumber && TierNumber <= LastMaxNumber) {
                     SelectedCatagory = y;
@@ -40,9 +49,9 @@ public class GachaLoot : MonoBehaviour {
             }
 
             // Picks and save the selected loot reward
-            int SelectedReward = Random.Range(0, gachaLootProperties.LootTable[SelectedCatagory].LootRewards.Length);
-            Debug.Log("The selected reward is: " + gachaLootProperties.LootTable[SelectedCatagory].LootRewards[SelectedReward] + ", which is a " + gachaLootProperties.LootTable[SelectedCatagory].LootCatagory + " reward catagory");
-            GeneratedLoot[x] = gachaLootProperties.LootTable[SelectedCatagory].LootRewards[SelectedReward];
+            int SelectedReward = Random.Range(0, lootTable[SelectedCatagory].LootRewards.Length);
+            Debug.Log("The selected reward is: " + lootTable[SelectedCatagory].LootRewards[SelectedReward] + ", which is a " + lootTable[SelectedCatagory].LootCatagory + " reward catagory");
+            GeneratedLoot[x] = lootTable[SelectedCatagory].LootRewards[SelectedReward];
         }
 
         // The saved loot reward

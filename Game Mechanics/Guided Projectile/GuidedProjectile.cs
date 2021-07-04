@@ -17,7 +17,22 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class GuidedProjectile : MonoBehaviour {
     #region Variables
-    [SerializeField] ProjectileProperties projectileProperties = null;
+    enum GuidanceSystem { Controlled, Homming }
+    enum ForwardAxis { X_Axis, Y_Axis, Z_Axis }
+
+    [Header("Projectile Properites")]
+    [SerializeField] GuidanceSystem guidanceMethod = GuidanceSystem.Controlled;
+    [Tooltip("This is used to set which way the projectile is facing")] [SerializeField] ForwardAxis forwardDirection = ForwardAxis.X_Axis;
+    [SerializeField] [Range(0, 1)] float turnRate = 0.5f;
+    [Space(5)]
+    [SerializeField] bool setInitalVelocity = false;
+    [SerializeField] [ConditionalHide("setInitalVelocity", true)] float projectileVelocity = 0;
+    [SerializeField] bool isTracking = false;
+
+    [Header("Control Guided Values")]
+    [Space(20)]
+    [SerializeField] [ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] float inputSmoothing = 0;
+    [SerializeField] [ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] float inputdSensitivity = 0;
 
     Rigidbody ProjectileBody;
     GameObject TargetObj;
@@ -28,11 +43,24 @@ public class GuidedProjectile : MonoBehaviour {
     float InitalVelocity;
     #endregion
 
+    [ExecuteInEditMode]
+    private void OnValidate() {
+        if (projectileVelocity < 0) {
+            projectileVelocity = 0;
+        }
+        if (inputSmoothing < 0) {
+            inputSmoothing = 0;
+        }
+        if (inputdSensitivity < 0) {
+            inputdSensitivity = 0;
+        }
+    }
+
     // Main meathod of the script, should be used during fixed update
     public void ControlProjectile(Vector2 InputVector = default(Vector2)) {
-        IsTracking = projectileProperties.IsTracking;
-        if (projectileProperties.SetInitalVelocity) {
-            InitalVelocity = projectileProperties.ProjectileVelocity;
+        IsTracking = isTracking;
+        if (setInitalVelocity) {
+            InitalVelocity = projectileVelocity;
         }
         else {
             InitalVelocity = ProjectileBody.velocity.magnitude;
@@ -45,7 +73,7 @@ public class GuidedProjectile : MonoBehaviour {
         }
         else {
             if (IsTracking) {
-                switch (projectileProperties.GuidanceMethod) {
+                switch (guidanceMethod) {
                     case GuidanceSystem.Homming:
                         Quaternion TargetDirection = Quaternion.LookRotation(TargetObj.transform.position - this.transform.position);
 
@@ -54,9 +82,9 @@ public class GuidedProjectile : MonoBehaviour {
                     case GuidanceSystem.Controlled:
                         var NewDirection = new Vector2(-InputVector.y, InputVector.x);
 
-                        NewDirection = Vector2.Scale(NewDirection, new Vector2(projectileProperties.InputSensitivity * projectileProperties.InputSmoothing, projectileProperties.InputSensitivity * projectileProperties.InputSmoothing));
-                        SmoothedVector.x = Mathf.Lerp(SmoothedVector.x, NewDirection.x, 1f / projectileProperties.InputSmoothing);
-                        SmoothedVector.y = Mathf.Lerp(SmoothedVector.y, NewDirection.y, 1f / projectileProperties.InputSmoothing);
+                        NewDirection = Vector2.Scale(NewDirection, new Vector2(inputdSensitivity * inputSmoothing, inputdSensitivity * inputSmoothing));
+                        SmoothedVector.x = Mathf.Lerp(SmoothedVector.x, NewDirection.x, 1f / inputSmoothing);
+                        SmoothedVector.y = Mathf.Lerp(SmoothedVector.y, NewDirection.y, 1f / inputSmoothing);
                         ControlledDirection += SmoothedVector;
 
                         ApplyNewDirection(Quaternion.Euler(ControlledDirection));
@@ -68,9 +96,9 @@ public class GuidedProjectile : MonoBehaviour {
 
     // Applies the change in position or direction by slowly rotating the projectile while moving "forward"
     void ApplyNewDirection(Quaternion TargetRotation) {
-        ProjectileBody.MoveRotation(Quaternion.RotateTowards(transform.rotation, TargetRotation, projectileProperties.TurnRate));
+        ProjectileBody.MoveRotation(Quaternion.RotateTowards(transform.rotation, TargetRotation, turnRate));
 
-        switch (projectileProperties.ForwardDirection) {
+        switch (forwardDirection) {
             case ForwardAxis.X_Axis:
                 ProjectileBody.velocity = transform.right * InitalVelocity;
                 break;

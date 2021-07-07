@@ -19,14 +19,14 @@ public class GravityManipulator : MonoBehaviour {
     protected enum ForceAxis { X, Y, Z }
 
     [Header("Gravity Properties")]
-    [SerializeField] Gravity gravityType = Gravity.Directional;
-    [SerializeField] float gravityForce = 9.81f;
-    [SerializeField] float rotationSpeed = 50f;
-    [SerializeField] bool limitedGravityArea = true;
+    [Tooltip("Plantary gravity (Spherical), Specific direction (Directional)")] [SerializeField] Gravity gravityType = Gravity.Directional;
+    [Tooltip("Gravity strength.")] [SerializeField] float gravityForce = 9.81f;
+    [Tooltip("The speed of the object rotatating upwards relative to gravity direction.")] [SerializeField] float rotationSpeed = 50f;
+    [Tooltip("Limited Gravity Range.")] [SerializeField] bool limitedGravityArea = true;
     [Space(10)]
-    [SerializeField] [ConditionalEnumHide("gravityType", (int)Gravity.Directional)] GravityAxis gravityAxis = null;
-    [SerializeField] [ConditionalHide("limitedGravityArea", true)] DirectionalGravity directionalGravity = null;
-    [SerializeField] [ConditionalHide("limitedGravityArea", true)] SphericalGravity sphericalGravity = null;
+    [Tooltip("Direction of gravity.")] [SerializeField] [ConditionalEnumHide("gravityType", (int)Gravity.Directional)] GravityAxis gravityAxis = null;
+    [Tooltip("Area for gravity.")] [SerializeField] [ConditionalHide("limitedGravityArea", true)] DirectionalGravity directionalGravity = null;
+    [Tooltip("Area for gravity.")] [SerializeField] [ConditionalHide("limitedGravityArea", true)] SphericalGravity sphericalGravity = null;
 
     [System.Serializable]
     protected class GravityAxis {

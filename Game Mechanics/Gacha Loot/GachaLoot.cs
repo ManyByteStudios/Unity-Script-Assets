@@ -11,10 +11,10 @@ using UnityEngine;
 public class GachaLoot : MonoBehaviour {
     #region Gacha Loot Properties
     [Header("Loot Properties")]
-    [SerializeField] LootProperties[] lootTable = null;
+    [Tooltip("Possible loot rewards with chances.")] [SerializeField] LootProperties[] lootTable = null;
 
     [System.Serializable]
-    public class LootProperties {
+    private class LootProperties {
         public string LootCatagory = null;
         [AbsoluteValue()] public int LootChance = 0;
         public GameObject[] LootRewards = null;

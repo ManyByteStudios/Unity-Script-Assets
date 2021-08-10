@@ -1,0 +1,10 @@
+Please keep in mind that the script and or asset may not be up to date with Unity!
+
+To use this script just simply import the script into your project. You can choose
+to have multiple objects with the same script or use inheritance to have multiple
+versions of the script. To inherit the scrip simply replace "MonoBehaviour" with
+this script's class name, "UniversalUIBar". If you will have multiple UI bars it
+is best to use inheritance.
+
+IF the script does not work or you do not wish to download the Custom Attributes simply remove 
+the various custom attributes and the code will run fine.

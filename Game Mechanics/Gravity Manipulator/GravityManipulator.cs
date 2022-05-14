@@ -15,7 +15,7 @@ using UnityEngine;
 [RequireComponent(typeof(SphereCollider))]
 public class GravityManipulator : MonoBehaviour {
     #region Gravity Manipulator Values
-    enum Gravity { Directional, Spherical}
+    protected enum Gravity { Directional, Spherical}
     protected enum ForceAxis { X, Y, Z }
 
     [Header("Gravity Properties")]
@@ -24,9 +24,9 @@ public class GravityManipulator : MonoBehaviour {
     [Tooltip("The speed of the object rotatating upwards relative to gravity direction.")] [SerializeField] float rotationSpeed = 50f;
     [Tooltip("Limited Gravity Range.")] [SerializeField] bool limitedGravityArea = true;
     [Space(10)]
-    [Tooltip("Direction of gravity.")] [SerializeField] [ConditionalEnumHide("gravityType", (int)Gravity.Directional)] GravityAxis gravityAxis = null;
-    [Tooltip("Area for gravity.")] [SerializeField] [ConditionalHide("limitedGravityArea", true)] DirectionalGravity directionalGravity = null;
-    [Tooltip("Area for gravity.")] [SerializeField] [ConditionalHide("limitedGravityArea", true)] SphericalGravity sphericalGravity = null;
+    [Tooltip("Direction of gravity.")] [SerializeField] [ConditionalEnumHide("gravityType", (int)Gravity.Directional)] protected GravityAxis gravityAxis = null;
+    [Tooltip("Area for gravity.")] [SerializeField] [ConditionalHide("limitedGravityArea", true)] protected DirectionalGravity directionalGravity = null;
+    [Tooltip("Area for gravity.")] [SerializeField] [ConditionalHide("limitedGravityArea", true)] protected SphericalGravity sphericalGravity = null;
 
     [System.Serializable]
     protected class GravityAxis {

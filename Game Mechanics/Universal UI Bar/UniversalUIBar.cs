@@ -15,64 +15,64 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class UniversalUIBar : MonoBehaviour {
     #region Universal UI Bar Enums
-    enum FillMethod { Horizontal, Vertical, Radial360 }
-    enum H_FillOrigin { Right, Left }
-    enum V_FillOrigin { Bottom, Top }
-    enum R_FillOrigin { Bottom, Right, Top, Left }
+    protected enum FillMethod { Horizontal, Vertical, Radial360 }
+    protected enum H_FillOrigin { Right, Left }
+    protected enum V_FillOrigin { Bottom, Top }
+    protected enum R_FillOrigin { Bottom, Right, Top, Left }
     #endregion
 
     #region Universal UI Bar Properties
     [Header("UI Bar Properties")]
     [Tooltip("Image sprite.")]
-    [SerializeField] Sprite imageSprite = null;
+    [SerializeField] protected Sprite imageSprite = null;
 
     [Space(10)]
     [Tooltip("Slowly fill the UI bar.")]
-    [SerializeField] bool SmoothFillBar = false;
+    [SerializeField] protected bool SmoothFillBar = false;
     [Tooltip("Fill speed of the UI bar.")]
-    [ConditionalHide("SmoothFillBar", true)] [SerializeField] float fillSpeed = 0;
+    [ConditionalHide("SmoothFillBar", true)] [SerializeField] protected float fillSpeed = 0;
     [Tooltip("Set the start fill amount.")]
-    [Range(0, 1)] [SerializeField] float startFillPercent = 0.5f;
+    [Range(0, 1)] [SerializeField] protected float startFillPercent = 0.5f;
 
     [Space(10)]
     [Tooltip("Fill origion from the center.")]
-    [SerializeField] bool fillFromCenter = false;
+    [SerializeField] protected bool fillFromCenter = false;
     [Tooltip("Flip the fill direction.")]
-    [ConditionalHide("fillFromCenter", true)] [SerializeField] bool flipFillDirection = false;
+    [ConditionalHide("fillFromCenter", true)] [SerializeField] protected bool flipFillDirection = false;
     [Tooltip("Have a custom radial UI amount")]
-    [ConditionalEnumHide("fillType", (int)FillMethod.Radial360)] [SerializeField] bool customRadialUI = false;
+    [ConditionalEnumHide("fillType", (int)FillMethod.Radial360)] [SerializeField] protected bool customRadialUI = false;
     [Tooltip("Set the custom radial amount for the UI.")]
-    [ConditionalHide("customRadialUI", true)] [SerializeField] [Range(0, 360)] int customRadial = 360;
+    [ConditionalHide("customRadialUI", true)] [SerializeField] [Range(0, 360)] protected int customRadial = 360;
 
     [Space(5)]
     [Tooltip("Vertical fill bar or horizontal fill bar.")]
     [SerializeField] FillMethod fillType = FillMethod.Horizontal;
     [Tooltip("Fill direction of the UI image.")]
-    [ShowIf("fillType", (int)FillMethod.Vertical)] [SerializeField] V_FillOrigin verticalFillOrigin = V_FillOrigin.Bottom;
+    [ShowIf("fillType", (int)FillMethod.Vertical)] [SerializeField] protected V_FillOrigin verticalFillOrigin = V_FillOrigin.Bottom;
     [Tooltip("Fill direction of the UI image.")]
-    [ShowIf("fillType", (int)FillMethod.Horizontal)] [SerializeField] H_FillOrigin horizontalFillOrigin = H_FillOrigin.Left;
+    [ShowIf("fillType", (int)FillMethod.Horizontal)] [SerializeField] protected H_FillOrigin horizontalFillOrigin = H_FillOrigin.Left;
     [Tooltip("Fill direction of the UI image.")]
-    [ShowIf("fillType", (int)FillMethod.Radial360)] [SerializeField] R_FillOrigin radialFillOrigin = R_FillOrigin.Bottom;
+    [ShowIf("fillType", (int)FillMethod.Radial360)] [SerializeField] protected R_FillOrigin radialFillOrigin = R_FillOrigin.Bottom;
 
     [Space(10)]
     [Tooltip("List of images for UI bar.")]
-    [SerializeField] List<Image> UI_Images = new List<Image>(2);
+    [SerializeField] protected List<Image> UI_Images = new List<Image>(2);
 
     [Space(10)]
-    [SerializeField] bool canOverFill = false;
-    [ShowIf("canOverFill", true)] [SerializeField] Color overFillColor = Color.blue;
+    [SerializeField] protected bool canOverFill = false;
+    [ShowIf("canOverFill", true)] [SerializeField] protected Color overFillColor = Color.blue;
 
     [Space(5)]
     [Tooltip("Range for positive color on UI bar.")]
-    [SerializeField] [MinMaxRange(0, 1)] Vector2 positiveRange = new Vector2(0.75f, 1f);
+    [SerializeField] [MinMaxRange(0, 1)] protected Vector2 positiveRange = new Vector2(0.75f, 1f);
     [Tooltip("Color of UI bar when high.")]
-    [SerializeField] Color positiveColor = Color.green;
+    [SerializeField] protected Color positiveColor = Color.green;
 
     [Space(5)]
     [Tooltip("Range for negative color on UI bar.")]
-    [SerializeField] [MinMaxRange(0, 1)] Vector2 negativeRange = new Vector2(0f, 0.25f);
+    [SerializeField] [MinMaxRange(0, 1)] protected Vector2 negativeRange = new Vector2(0f, 0.25f);
     [Tooltip("Color of UI bar when low.")]
-    [SerializeField] Color negativeColor = Color.red;
+    [SerializeField] protected Color negativeColor = Color.red;
 
     Gradient UIBarGradient;
     GradientColorKey[] ColorKeys;

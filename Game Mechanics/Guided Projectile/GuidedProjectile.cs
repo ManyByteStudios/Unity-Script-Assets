@@ -17,22 +17,22 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class GuidedProjectile : MonoBehaviour {
     #region Variables
-    enum GuidanceSystem { Controlled, Homming }
-    enum ForwardAxis { X_Axis, Y_Axis, Z_Axis }
+    protected enum GuidanceSystem { Controlled, Homming }
+    protected enum ForwardAxis { X_Axis, Y_Axis, Z_Axis }
 
     [Header("Projectile Properites")]
-    [Tooltip("Player controlled or self guided projectile.")] [SerializeField] GuidanceSystem guidanceMethod = GuidanceSystem.Controlled;
-    [Tooltip("Direction of the projectile (what is forward).")] [SerializeField] ForwardAxis forwardDirection = ForwardAxis.X_Axis;
-    [Tooltip("Speed of the projectile's turn.")] [SerializeField] [Range(0, 1)] float turnRate = 0.5f;
+    [Tooltip("Player controlled or self guided projectile.")] [SerializeField] protected GuidanceSystem guidanceMethod = GuidanceSystem.Controlled;
+    [Tooltip("Direction of the projectile (what is forward).")] [SerializeField] protected ForwardAxis forwardDirection = ForwardAxis.X_Axis;
+    [Tooltip("Speed of the projectile's turn.")] [SerializeField] [Range(0, 1)] protected float turnRate = 0.5f;
     [Space(5)]
-    [SerializeField] bool setInitalVelocity = false;
-    [Tooltip("Set the starting velocity.")] [SerializeField] [ConditionalHide("setInitalVelocity", true)] float projectileVelocity = 0;
-    [Tooltip("Force stop the guided projectile at start.")] [SerializeField] bool isTracking = false;
+    [SerializeField] protected bool setInitalVelocity = false;
+    [Tooltip("Set the starting velocity.")] [SerializeField] [ConditionalHide("setInitalVelocity", true)] protected float projectileVelocity = 0;
+    [Tooltip("Force stop the guided projectile at start.")] [SerializeField] protected bool isTracking = false;
 
     [Header("Control Guided Values")]
     [Space(20)]
-    [Tooltip("Used for input control.")] [SerializeField] [ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] float inputSmoothing = 0;
-    [Tooltip("Used for input control.")] [SerializeField] [ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] float inputdSensitivity = 0;
+    [Tooltip("Used for input control.")] [SerializeField] [ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] protected float inputSmoothing = 0;
+    [Tooltip("Used for input control.")] [SerializeField] [ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] protected float inputdSensitivity = 0;
 
     Rigidbody ProjectileBody;
     GameObject TargetObj;

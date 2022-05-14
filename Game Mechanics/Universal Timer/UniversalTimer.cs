@@ -7,13 +7,14 @@ using UnityEngine;
     change in timer function, reset, pause, and unpause.
 */
 
-public enum TimerFunction { CountingUp, CountingDown}
 public class UniversalTimer : MonoBehaviour {
     #region Timer Properties
+    protected enum TimerFunction { CountingUp, CountingDown }
+
     [Header("Timer Properties")]
-    [Tooltip("Causes the timer to pause or resume its process.")] public bool timerIsPause = false;
-    [Tooltip("Determines if the timer will count up or down.")] [SerializeField] TimerFunction function = TimerFunction.CountingUp;
-    [Tooltip("What is the total amount of time the timer has to count down in seconds.")]  [ConditionalEnumHide("function", (int)TimerFunction.CountingDown)] public int allowedTime = 0;
+    [Tooltip("Causes the timer to pause or resume its process.")] protected bool timerIsPause = false;
+    [Tooltip("Determines if the timer will count up or down.")] [SerializeField] protected TimerFunction function = TimerFunction.CountingUp;
+    [Tooltip("What is the total amount of time the timer has to count down in seconds.")]  [ConditionalEnumHide("function", (int)TimerFunction.CountingDown)] protected int allowedTime = 0;
 
     float CurrentTime = 0;
     string Minutes;

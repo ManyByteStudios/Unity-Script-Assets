@@ -15,19 +15,19 @@ using UnityEngine;
 public class HoverPhysics : MonoBehaviour {
     #region Hover Properites
     [Header("Rigidbody Properties")]
-    [ReadOnly] [SerializeField] float totalMass = 0;
+    [ReadOnly] [SerializeField] protected float totalMass = 0;
     [Tooltip("Speed of slowing down movement.")]
-    [MinValue(0)] [SerializeField] float drag = 1;
+    [MinValue(0)] [SerializeField] protected float drag = 1;
     [Tooltip("Speed of slowing down rotational movement.")]
-    [MinValue(0)] [SerializeField] float angularDrag = 1;
+    [MinValue(0)] [SerializeField] protected float angularDrag = 1;
     [Space(10)]
     [Header("Hover Physcis Properties")]
     [Tooltip("Locations of where the hover force is applied.")]
-    [SerializeField] Transform[] hoverPoints;
+    [SerializeField] protected Transform[] hoverPoints;
     [Tooltip("Strength of the downward force.")]
-    [AbsoluteValue] [SerializeField] float hoverForce = 200;
+    [AbsoluteValue] [SerializeField] protected float hoverForce = 200;
     [Tooltip("Distance between the ground and the object.")]
-    [AbsoluteValue] [SerializeField] float hoverDistance = 0;
+    [AbsoluteValue] [SerializeField] protected float hoverDistance = 0;
 
     [ExecuteInEditMode]
     private void OnValidate() {

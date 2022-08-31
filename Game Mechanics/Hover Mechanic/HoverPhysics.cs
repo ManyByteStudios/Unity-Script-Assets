@@ -15,19 +15,20 @@ using UnityEngine;
 public class HoverPhysics : MonoBehaviour {
     #region Hover Properites
     [Header("Rigidbody Properties")]
-    [ReadOnly] [SerializeField] protected float totalMass = 0;
+    [ReadOnly] [SerializeField] private float totalMass = 0;
     [Tooltip("Speed of slowing down movement.")]
-    [MinValue(0)] [SerializeField] protected float drag = 1;
+    [MinValue(0)] [SerializeField] private float drag = 1;
     [Tooltip("Speed of slowing down rotational movement.")]
-    [MinValue(0)] [SerializeField] protected float angularDrag = 1;
+    [MinValue(0)] [SerializeField] private float angularDrag = 1;
     [Space(10)]
     [Header("Hover Physcis Properties")]
+    [ReadOnly] private bool isHovering = true;
     [Tooltip("Locations of where the hover force is applied.")]
-    [SerializeField] protected Transform[] hoverPoints;
+    [SerializeField] private Transform[] hoverPoints;
     [Tooltip("Strength of the downward force.")]
-    [AbsoluteValue] [SerializeField] protected float hoverForce = 200;
+    [AbsoluteValue] [SerializeField] private float hoverForce = 200;
     [Tooltip("Distance between the ground and the object.")]
-    [AbsoluteValue] [SerializeField] protected float hoverDistance = 0;
+    [AbsoluteValue] [SerializeField] private float hoverDistance = 0;
 
     [ExecuteInEditMode]
     private void OnValidate() {
@@ -41,26 +42,32 @@ public class HoverPhysics : MonoBehaviour {
     #endregion
 
     private void FixedUpdate() {
-        RaycastHit hit;
-        foreach (Transform HoverPoint in hoverPoints) {
-            Vector3 DownwardForce;
-            float ForcePercentage;
+        if (isHovering) {
+            RaycastHit hit;
+            foreach (Transform HoverPoint in hoverPoints) {
+                Vector3 DownwardForce;
+                float ForcePercentage;
 
-            if (Physics.Raycast (HoverPoint.position, HoverPoint.up * -1, out hit, hoverDistance)) {
-                // Determine the current distance between the object and ground
-                ForcePercentage = 1 - (hit.distance / hoverDistance);
+                if (Physics.Raycast(HoverPoint.position, HoverPoint.up * -1, out hit, hoverDistance)) {
+                    // Determine the current distance between the object and ground
+                    ForcePercentage = 1 - (hit.distance / hoverDistance);
 
-                // Calculate the amount of force to apply
-                DownwardForce = transform.up * hoverForce * ForcePercentage;
+                    // Calculate the amount of force to apply
+                    DownwardForce = transform.up * hoverForce * ForcePercentage;
 
-                // Include the force applied on the object via mass
-                DownwardForce *= Time.deltaTime * totalMass;
+                    // Include the force applied on the object via mass
+                    DownwardForce *= Time.deltaTime * totalMass;
 
-                // Apply force
-                Rigidbody HoverBody = GetComponent<Rigidbody>();
-                HoverBody.AddForceAtPosition(DownwardForce, HoverPoint.position);
+                    // Apply force
+                    Rigidbody HoverBody = GetComponent<Rigidbody>();
+                    HoverBody.AddForceAtPosition(DownwardForce, HoverPoint.position);
+                }
             }
         }
+    }
+
+    protected void AllowHover () {
+        isHovering = !isHovering;
     }
 
     void OnCollisionEnter(Collision Obj) {

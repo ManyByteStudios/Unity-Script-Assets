@@ -11,10 +11,11 @@ using UnityEngine;
 public class GachaLoot : MonoBehaviour {
     #region Gacha Loot Properties
     [Header("Loot Properties")]
-    [Tooltip("Possible loot rewards with chances.")] [SerializeField] protected LootProperties[] lootTable = null;
+    [Tooltip("Possible loot rewards with chances.")]
+    [SerializeField] private LootProperties[] lootTable = null;
 
     [System.Serializable]
-    protected class LootProperties {
+    private class LootProperties {
         public string LootCatagory = null;
         [AbsoluteValue()] public int LootChance = 0;
         public GameObject[] LootRewards = null;
@@ -22,7 +23,7 @@ public class GachaLoot : MonoBehaviour {
     #endregion
 
     // This method can be called from another script to generate the loot drop
-    public GameObject[] GenerateLoot(int NumberOfRewards) {
+    protected GameObject[] GenerateLoot(int NumberOfRewards) {
         int MaxLootPool = 1;
         GameObject[] GeneratedLoot = null;
 

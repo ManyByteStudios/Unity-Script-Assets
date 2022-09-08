@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    This is a simple script where the core logic of loot prize / reward 
-    are randomly selected. The presentation of the loot is left empty for
-    the various styles of showcasing the loot to the player.
-*/
+/// <summary>
+/// This is a simple script where the core logic of loot prize / reward 
+/// are randomly selected. The presentation of the loot is left empty for
+/// the various styles of showcasing the loot to the player.
+/// </summary>
 
 public class GachaLoot : MonoBehaviour {
     #region Gacha Loot Properties

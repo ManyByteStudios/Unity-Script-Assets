@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    This is a simple script that allows any projectile based object
-    to be guided manually to a destination, or even have it set as
-    a homing missle.
+/// <summary>
+/// This is a simple script that allows any projectile based object
+/// to be guided manually to a destination, or even have it set as
+/// a homing missle.
 
-    If you wish to use it as a laser guided projectile, you can 
-    use a ray cast and set the target as a new transform when the ray
-    cast hits something or use the position of the ray cast as a way to 
-    direct the projectile.
-*/
+/// If you wish to use it as a laser guided projectile, you can 
+/// use a ray cast and set the target as a new transform when the ray
+/// cast hits something or use the position of the ray cast as a way to 
+/// direct the projectile.
+/// </summary>
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody))]

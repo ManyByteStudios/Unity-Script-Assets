@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    This script allows for an object to have
-    the movement and chacteristics of a drone.
-    Taking in input, the script will manipulate
-    position, rotation and even audio, similar
-    to a flying drone. Any method that is called
-    must be used in the FixedUpdate method.
-*/
+/// <summary>
+/// This script allows for an object to have
+/// the movement and chacteristics of a drone.
+/// Taking in input, the script will manipulate
+/// position, rotation and even audio, similar
+/// to a flying drone. Any method that is called
+/// must be used in the FixedUpdate method.
+/// </summary>
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody))]
@@ -19,7 +19,7 @@ public class DroneController : MonoBehaviour {
     [Header("Drone Components")]
     [Tooltip("Enable uniform tilt.")]
     [SerializeField] protected bool uniformTilt = true;
-    [SerializeField] [ConditionalHide("NotUniformTilt", true)] TiltComponents tiltComponents = null;
+    [SerializeField] private TiltComponents tiltComponents = null;
     [Space(15)]
     [Header("Drone Movement")]
     [Tooltip("Drone movement speed and tilt for forward and strafe movement is the same.")]
@@ -70,7 +70,6 @@ public class DroneController : MonoBehaviour {
     Rigidbody DroneBody;
     AudioSource DroneSound;
     [SerializeField] [HideInInspector] private bool NotUniform = false;
-    [SerializeField] [HideInInspector] private bool NotUniformTilt = false;
     float SplitSpeedLimit;
     float E_Input, F_Input, S_Input, R_Input;
     float UpForce;
@@ -83,7 +82,6 @@ public class DroneController : MonoBehaviour {
     [ExecuteInEditMode]
     private void OnValidate() {
         NotUniform = !uniformMovement;
-        NotUniformTilt = !uniformTilt;
 
         // Ensure all movement values are positive
         if (movementSpeed < 0) {
@@ -247,8 +245,6 @@ public class DroneController : MonoBehaviour {
 
     // Drone tilt and rotation depending on input
     private void DroneTilt() {
-        DroneBody.rotation = Quaternion.Euler(DroneBody.rotation.x, DroneRotation, DroneBody.rotation.z);
-
         switch (uniformTilt) {
             case true:
                 DroneBody.rotation = Quaternion.Euler(ForwardTilt, DroneRotation, StrafeTilt);
@@ -256,12 +252,13 @@ public class DroneController : MonoBehaviour {
 
             case false:
                 DroneBody.rotation = Quaternion.Euler(DroneBody.rotation.x, DroneRotation, DroneBody.rotation.z);
+
                 foreach (Transform F_Tilit in tiltComponents.forwardTiltComponents) {
-                    F_Tilit.rotation = Quaternion.Euler(ForwardTilt, F_Tilit.rotation.y, F_Tilit.rotation.z);
+                    F_Tilit.localRotation = Quaternion.Euler(ForwardTilt, F_Tilit.rotation.y, F_Tilit.rotation.z);
                 }
 
                 foreach (Transform S_Tilit in tiltComponents.strafeTiltComponents) {
-                    S_Tilit.rotation = Quaternion.Euler(S_Tilit.rotation.x, S_Tilit.rotation.y, StrafeTilt);
+                    S_Tilit.localRotation = Quaternion.Euler(S_Tilit.rotation.x, S_Tilit.rotation.y, StrafeTilt);
                 }
                 break;
         }

@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    This script manipulates the forces applied on any
-    game objects with the "GravityBody" script. The 
-    script will be dynamic enough to change both gravity
-    direction and force along with the effected area.
-*/
+/// <summary>
+/// This script manipulates the forces applied on any
+/// game objects with the "GravityBody" script. The 
+/// script will be dynamic enough to change both gravity
+/// direction and force along with the effected area.
+/// </summary>
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(BoxCollider))]

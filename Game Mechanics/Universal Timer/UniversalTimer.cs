@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    This is a universal timer script, the script allows for the
-    change in timer function, reset, pause, and unpause.
-*/
+/// <summary>
+/// This is a universal timer script, the script allows for the
+/// change in timer function, reset, pause, and unpause.
+/// </summary>
 
 public class UniversalTimer : MonoBehaviour {
     #region Timer Properties

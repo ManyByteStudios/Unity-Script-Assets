@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    This script provides any information that the 
-    Gravity Manipulator script needs to apply the
-    physics upon object.
-*/
+/// <summary> 
+/// This script provides any information that the 
+/// Gravity Manipulator script needs to apply the
+/// physics upon object.
+/// </summary>
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody))]

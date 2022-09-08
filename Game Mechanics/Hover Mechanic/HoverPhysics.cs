@@ -22,7 +22,7 @@ public class HoverPhysics : MonoBehaviour {
     [MinValue(0)] [SerializeField] private float angularDrag = 1;
     [Space(10)]
     [Header("Hover Physcis Properties")]
-    [ReadOnly] private bool isHovering = true;
+    [SerializeField] private bool isHovering = true;
     [Tooltip("Locations of where the hover force is applied.")]
     [SerializeField] private Transform[] hoverPoints;
     [Tooltip("Strength of the downward force.")]
@@ -41,7 +41,12 @@ public class HoverPhysics : MonoBehaviour {
     }
     #endregion
 
-    private void FixedUpdate() {
+    public HoverPhysics() { 
+    
+    }
+
+    // Hover function must be called in FixedUpdate
+    public void Hover() {
         if (isHovering) {
             RaycastHit hit;
             foreach (Transform HoverPoint in hoverPoints) {
@@ -66,7 +71,7 @@ public class HoverPhysics : MonoBehaviour {
         }
     }
 
-    protected void AllowHover () {
+    public void AllowHover () {
         isHovering = !isHovering;
     }
 

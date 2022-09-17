@@ -7,3 +7,13 @@ this script's class name, "UniversalTimer".
 
 IF the script does not work or you do not wish to download the Custom Attributes simply remove 
 the various custom attributes and the code will run fine.
+
+Calling the methods SwitchTimerFunction(...), SetTimerCountUp(), and SetTimerCountDown, 
+will change the type of timer function. 
+
+Calling the method ResetTimer(...), will pause and reset the timer based on its function.
+While calling PauseUnpauseTimer() will change the active status on the timer function.
+
+RunTimer() must be called during the Update method, it is the core function and logic of the
+script. TimerText() will return a string of the of the timer and will display accordingly
+of counting up and down. 

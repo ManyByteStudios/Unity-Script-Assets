@@ -13,3 +13,5 @@ other objects.
 
 IF the script does not work or you do not wish to download the Custom Attributes simply remove 
 the various custom attributes and the code will run fine.
+
+This script will run itself,

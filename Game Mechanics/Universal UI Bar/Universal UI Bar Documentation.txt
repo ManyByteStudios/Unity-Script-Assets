@@ -8,3 +8,10 @@ is best to use inheritance.
 
 IF the script does not work or you do not wish to download the Custom Attributes simply remove 
 the various custom attributes and the code will run fine.
+
+Calling the method GetCurrentFill() will return the percentage that the UI bar is filled. 
+
+Calling the method SetCurrentFill(float SetFill) will change the current fill amount.
+
+Calling the Fill_UI_Bar(float FillAmount) will gradually fill or empty the bar based on amount
+provided.

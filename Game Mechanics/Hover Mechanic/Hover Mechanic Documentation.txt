@@ -7,3 +7,6 @@ this script's class name, "HoverPhysics".
 
 IF the script does not work or you do not wish to download the Custom Attributes simply remove 
 the various custom attributes and the code will run fine.
+
+Hover() must be called during FixedUpdate() and is the core logic and function of the script.
+AllowHover() will toggle on or off the hover state. 

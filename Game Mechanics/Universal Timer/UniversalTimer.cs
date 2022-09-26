@@ -9,33 +9,35 @@ using UnityEngine;
 
 public class UniversalTimer : MonoBehaviour {
     #region Timer Properties
-    private enum TimerFunction { CountingUp, CountingDown }
-
     [Header("Timer Properties")]
-    [Tooltip("Causes the timer to pause or resume its process.")]
-    private bool timerIsPause = false;
-    [Tooltip("Determines if the timer will count up or down.")]
-    [SerializeField] private TimerFunction function = TimerFunction.CountingUp;
-    [Tooltip("What is the total amount of time the timer has to count down in seconds.")]
-    [ConditionalEnumHide("function", (int)TimerFunction.CountingDown)] [SerializeField] private int allowedTime = 0;
+    [Tooltip("Timer scriptable object.")]
+    [SerializeField] private TimerProperties timerProperty;
 
+    TimerProperties.TimerFunction CurrentFunction;
+    bool isRunning = false;
     float CurrentTime = 0;
     string Minutes;
     string Seconds;
+
+    [ExecuteInEditMode]
+
+    private void OnValidate() {
+        CurrentFunction = timerProperty.Function;
+    }
     #endregion
 
     #region Core Timer Functions
     // Timer function that can be used in other class in the update method
     protected void RunTimer() {
-        if (!timerIsPause) {
-            switch (function) {
-                case TimerFunction.CountingUp:
+        if (!timerProperty.TimerIsPause) {
+            switch (timerProperty.Function) {
+                case TimerProperties.TimerFunction.CountingUp:
                     CurrentTime += Time.deltaTime;
 
                     Minutes = ((int)CurrentTime / 60).ToString();
                     Seconds = (CurrentTime % 60).ToString("f2");
                     break;
-                case TimerFunction.CountingDown:
+                case TimerProperties.TimerFunction.CountingDown:
                     CurrentTime -= Time.deltaTime;
 
                     if (CurrentTime <= 0) {
@@ -51,26 +53,26 @@ public class UniversalTimer : MonoBehaviour {
 
     // A simple way to pause and unpause the timer script
     protected void PauseUnpauseTimer() {
-        timerIsPause = !timerIsPause;
+        isRunning = !timerProperty.TimerIsPause;
     }
 
     // Resetting the timer based on the current function, the TotalTime variable is only required for the CountingDown function
     protected void ResetTimer(int TotalTime = 0) {
-        timerIsPause = true;
+        isRunning = true;
 
-        switch (function) {
-            case TimerFunction.CountingUp:
+        switch (timerProperty.Function) {
+            case TimerProperties.TimerFunction.CountingUp:
                 CurrentTime = 0;
 
                 Minutes = ((int)CurrentTime / 60).ToString();
                 Seconds = (CurrentTime % 60).ToString("f2");
                 break;
-            case TimerFunction.CountingDown:
+            case TimerProperties.TimerFunction.CountingDown:
                 if (TotalTime > 0) {
                     CurrentTime = TotalTime;
                 }
                 else {
-                    CurrentTime = allowedTime;
+                    CurrentTime = timerProperty.AllowedTime;
                 }
 
                 Minutes = ((int)CurrentTime / 60).ToString();
@@ -89,19 +91,19 @@ public class UniversalTimer : MonoBehaviour {
     #region Changing Function
     // Alternates between the various timer function
     protected void SwitchTimerFunction(int TotalTime = 0) {
-        timerIsPause = true;
+        isRunning = true;
 
-        switch (function) {
-            case TimerFunction.CountingUp:
-                function = TimerFunction.CountingDown;
+        switch (CurrentFunction) {
+            case TimerProperties.TimerFunction.CountingUp:
+                CurrentFunction = TimerProperties.TimerFunction.CountingDown;
 
                 CurrentTime = TotalTime;
 
                 Minutes = ((int)CurrentTime / 60).ToString();
                 Seconds = (CurrentTime % 60).ToString("f2");
                 break;
-            case TimerFunction.CountingDown:
-                function = TimerFunction.CountingUp;
+            case TimerProperties.TimerFunction.CountingDown:
+                CurrentFunction = TimerProperties.TimerFunction.CountingUp;
 
                 CurrentTime = 0;
 
@@ -113,16 +115,16 @@ public class UniversalTimer : MonoBehaviour {
 
     // Setter functions to change to the specific timer function
     protected void SetTimerCountUp() {
-        timerIsPause = true;
-        function = TimerFunction.CountingUp;
+        isRunning = true;
+        CurrentFunction = TimerProperties.TimerFunction.CountingUp;
         CurrentTime = 0;
 
         Minutes = ((int)CurrentTime / 60).ToString();
         Seconds = (CurrentTime % 60).ToString("f2");
     }
     protected void SetTimerCountDown(int TotalTime = 0) {
-        timerIsPause = true;
-        function = TimerFunction.CountingDown;
+        isRunning = true;
+        CurrentFunction = TimerProperties.TimerFunction.CountingDown;
         CurrentTime = TotalTime;
 
         Minutes = ((int)CurrentTime / 60).ToString();

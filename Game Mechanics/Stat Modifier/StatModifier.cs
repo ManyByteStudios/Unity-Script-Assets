@@ -14,52 +14,9 @@ using UnityEngine;
 
 public class StatModifier : MonoBehaviour {
     #region Stat Modifier Upgrade Properties
-    private enum ModifyType { Additive, Percentage};
-    private enum StatType { Buff, Debuff};
-
     [Header("Stat Modifier Properties")]
-    [Tooltip("Name of the stat modifier.")]
-    [SerializeField] private string modifierName = null;
-    [Tooltip("Limited levels or number of upgrades for the modifier")]
-    [SerializeField] private bool limitedModifierLevels = true;
-    [Tooltip("The max level or number of upgrades for the modifier, limit is set to 20.")]
-    [SerializeField] [ConditionalHide("limitedModifierLevels", true)] private int maxModifierLevel = 1;
-    [Space(10)]
-    [Tooltip("Type of stat modifier.")]
-    [SerializeField] private ModifyType modifierType = ModifyType.Additive;
-    [Tooltip("Number of stats to be modified and its properties.")]
-    [SerializeField] private StatProperties[] statProperties = new StatProperties[1];
-
-    [System.Serializable]
-    private class StatProperties {
-        [Tooltip("Stat buff or debuff.")]
-        public StatType statType = StatType.Buff;
-        [Tooltip("Stat value at level 0.")]
-        [AbsoluteValue] public float baseStatValue = 0;
-        [Tooltip("How much the stat will increase by.")]
-        [AbsoluteValue] public float increaseStatBy = 0;
-        [Tooltip("Purpose of stat.")]
-        public string statDescription = null;
-    }
-
-    [ExecuteInEditMode]
-    private void OnValidate() {
-        if (maxModifierLevel < 1) {
-            maxModifierLevel = 1;
-        }
-        else if (maxModifierLevel > 20 && limitedModifierLevels) {
-            maxModifierLevel = 20;
-        }
-
-        foreach (StatProperties stats in statProperties) {
-            if (stats.baseStatValue < 0) {
-                stats.baseStatValue = 0;
-            }
-            if (stats.increaseStatBy < 0) {
-                stats.increaseStatBy = 0;
-            }
-        }
-    }
+    [Tooltip("Stat modifier scriptable object.")]
+    [SerializeField] private StatModifierProperties statModifierProperty;
 
     // Private variables
     int CurrentLevel = 0;
@@ -74,15 +31,15 @@ public class StatModifier : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        StatLevel_ID = modifierName + "_CurrentLevel";
+        StatLevel_ID = statModifierProperty.ModifierName + "_CurrentLevel";
 
-        BaseStat_ID = new string[statProperties.Length];
-        for (int i = 0; i < statProperties.Length; i++) {
-            BaseStat_ID[i] = modifierName + "_Stat_" + i;
+        BaseStat_ID = new string[statModifierProperty.Stats.Length];
+        for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
+            BaseStat_ID[i] = statModifierProperty.ModifierName + "_Stat_" + i;
         }
-        IncreaseStat_ID = new string[statProperties.Length];
-        for (int i = 0; i < statProperties.Length; i++) {
-            IncreaseStat_ID[i] = modifierName + "_IncreaseStat_" + i;
+        IncreaseStat_ID = new string[statModifierProperty.Stats.Length];
+        for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
+            IncreaseStat_ID[i] = statModifierProperty.ModifierName + "_IncreaseStat_" + i;
         }
     }
 
@@ -91,41 +48,41 @@ public class StatModifier : MonoBehaviour {
         CurrentLevel += NumOfUpgrades;
 
         // Check to see if upgrade went over the limit or under zero
-        if (CurrentLevel > maxModifierLevel && limitedModifierLevels) {
-            CurrentLevel = maxModifierLevel;
+        if (CurrentLevel > statModifierProperty.MaxModifierLevel && statModifierProperty.LimitedModifierLevels) {
+            CurrentLevel = statModifierProperty.MaxModifierLevel;
         }
         else if (CurrentLevel < 0) {
             CurrentLevel = 0;
         }
 
         // Update stats based on the current level of modifier
-        CurrentStatValues = new float[statProperties.Length];
-        for (int i = 0; i < statProperties.Length; i++) {
-            CurrentStatValues[i] = statProperties[i].baseStatValue + (CurrentLevel * statProperties[i].increaseStatBy);
+        CurrentStatValues = new float[statModifierProperty.Stats.Length];
+        for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
+            CurrentStatValues[i] = statModifierProperty.Stats[i].baseStatValue + (CurrentLevel * statModifierProperty.Stats[i].increaseStatBy);
         }
     }
 
     // Returns the final stat values
     public float[] StatResults() {
         // Container for all stats output value
-        float[] FinalStatResults = new float[statProperties.Length];
-        FinalStatDescription = new string[statProperties.Length];
+        float[] FinalStatResults = new float[statModifierProperty.Stats.Length];
+        FinalStatDescription = new string[statModifierProperty.Stats.Length];
 
         // Determine final stat value as a buff or debuff
-        for (int i = 0; i < statProperties.Length; i++) {
-            switch (statProperties[i].statType) {
-                case StatType.Buff:
+        for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
+            switch (statModifierProperty.Stats[i].statType) {
+                case StatModifierProperties.StatType.Buff:
                     FinalStatResults[i] = Mathf.Abs(CurrentStatValues[i]);
-                    FinalStatDescription[i] = statProperties[i].statDescription + " +" + FinalStatResults[i];
-                    if (modifierType == ModifyType.Percentage) {
+                    FinalStatDescription[i] = statModifierProperty.Stats[i].statDescription + " +" + FinalStatResults[i];
+                    if (statModifierProperty.Stats[i].modifierType == StatModifierProperties.ModifyType.Percentage) {
                         FinalStatResults[i] /= 100;
                         FinalStatDescription[i] = FinalStatDescription[i] + "%";
                     }
                     break;
-                case StatType.Debuff:
+                case StatModifierProperties.StatType.Debuff:
                     FinalStatResults[i] = (Mathf.Abs(CurrentStatValues[i]) * -1f);
-                    FinalStatDescription[i] = statProperties[i].statDescription + " " + FinalStatResults[i];
-                    if (modifierType == ModifyType.Percentage) {
+                    FinalStatDescription[i] = statModifierProperty.Stats[i].statDescription + " " + FinalStatResults[i];
+                    if (statModifierProperty.Stats[i].modifierType == StatModifierProperties.ModifyType.Percentage) {
                         FinalStatResults[i] /= 100;
                         FinalStatDescription[i] = FinalStatDescription[i] + "%";
                     }
@@ -141,11 +98,11 @@ public class StatModifier : MonoBehaviour {
         PlayerPrefs.SetInt(StatLevel_ID, CurrentLevel);
 
         // Only store the base stat and incrementation
-        for (int i = 0; i < statProperties.Length; i++) {
-            PlayerPrefs.SetFloat(BaseStat_ID[i], statProperties[i].baseStatValue);
+        for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
+            PlayerPrefs.SetFloat(BaseStat_ID[i], statModifierProperty.Stats[i].baseStatValue);
         }
-        for (int i = 0; i < statProperties.Length; i++) {
-            PlayerPrefs.SetFloat(IncreaseStat_ID[i], statProperties[i].baseStatValue);
+        for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
+            PlayerPrefs.SetFloat(IncreaseStat_ID[i], statModifierProperty.Stats[i].baseStatValue);
         }
     }
 
@@ -160,11 +117,11 @@ public class StatModifier : MonoBehaviour {
             CurrentLevel = PlayerPrefs.GetInt(StatLevel_ID);
 
             // Only get the base stat and incrementation
-            for (int i = 0; i < statProperties.Length; i++) {
-                statProperties[i].baseStatValue = PlayerPrefs.GetFloat(BaseStat_ID[i]);
+            for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
+                statModifierProperty.Stats[i].baseStatValue = PlayerPrefs.GetFloat(BaseStat_ID[i]);
             }
-            for (int i = 0; i < statProperties.Length; i++) {
-                statProperties[i].baseStatValue = PlayerPrefs.GetFloat(IncreaseStat_ID[i]);
+            for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
+                statModifierProperty.Stats[i].baseStatValue = PlayerPrefs.GetFloat(IncreaseStat_ID[i]);
             }
         }
     }
@@ -178,10 +135,10 @@ public class StatModifier : MonoBehaviour {
 
         // Delete the player prefs
         PlayerPrefs.DeleteKey(StatLevel_ID);
-        for (int i = 0; i < statProperties.Length; i++) {
+        for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
             PlayerPrefs.DeleteKey(BaseStat_ID[i]);
         }
-        for (int i = 0; i < statProperties.Length; i++) {
+        for (int i = 0; i < statModifierProperty.Stats.Length; i++) {
             PlayerPrefs.DeleteKey(IncreaseStat_ID[i]);
         }
     }

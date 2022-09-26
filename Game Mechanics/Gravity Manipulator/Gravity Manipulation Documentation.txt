@@ -11,6 +11,9 @@ by gravity.
 The Gravity Manipulator script should be placed on the object that you wish to affect
 other objects.
 
+This script comes with a Scriptable object that contains every variable this script
+uses.
+
 IF the script does not work or you do not wish to download the Custom Attributes simply remove 
 the various custom attributes and the code will run fine.
 

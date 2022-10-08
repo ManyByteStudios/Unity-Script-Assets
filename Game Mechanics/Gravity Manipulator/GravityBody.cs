@@ -20,19 +20,10 @@ public class GravityBody : MonoBehaviour {
     #endregion
 
     // Start is called before the first frame update
-    public virtual void Start() {
+    public void InitalizeGravBody() {
         ObjectBody = GetComponent<Rigidbody>();
         ObjectBody.useGravity = false;
         ObjectTransform = GetComponent<Transform>();
-    }
-
-    // Fixed Update is called during the physics update
-    public virtual void FixedUpdate() {
-        if (enableGravity && GravityManipulators != null) { 
-            foreach (GravityManipulator manipulator in GravityManipulators) {
-                manipulator.ApplyGravity(ObjectBody, ObjectTransform);
-            }
-        }
     }
 
     // Same Method as FixedUpdate but is open for those who do not wish to override

@@ -24,11 +24,16 @@ public class GravityProperties : ScriptableObject {
     [SerializeField] bool limitedGravityArea = true;
     [Space(10)]
     [Tooltip("Direction of gravity.")]
-    [SerializeField][ConditionalEnumHide("gravityType", (int)Gravity.Directional)] private GravityAxis gravityAxis = null;
+    [SerializeField][ConditionalEnumHide("gravityType", (int)Gravity.Directional)] GravityAxis gravityAxis = null;
     [Tooltip("Area for gravity.")]
-    [SerializeField][ConditionalHide("limitedGravityArea", true)] private DirectionalGravity directionalGravity = null;
+    [SerializeField][ConditionalHide("limitedGravityArea", true)] DirectionalGravity directionalGravity = null;
     [Tooltip("Area for gravity.")]
-    [SerializeField][ConditionalHide("limitedGravityArea", true)] private SphericalGravity sphericalGravity = null;
+    [SerializeField][ConditionalHide("limitedGravityArea", true)] SphericalGravity sphericalGravity = null;
+    [Space(10)]
+    [Tooltip("Gravity manipulator affects only listed objects with selective tags.")]
+    [SerializeField] bool selectiveObjects = false;
+    [Tooltip("All tags that will be affect by the gravity manipulator.")]
+    [SerializeField] [ConditionalHide("SelectiveObjects", true)] List<string> selectedTags = null;
 
     [System.Serializable]
     public class GravityAxis {
@@ -55,5 +60,8 @@ public class GravityProperties : ScriptableObject {
     public GravityAxis GravAxis => gravityAxis;
     public DirectionalGravity DirectionalGrav => directionalGravity;
     public SphericalGravity SphericalGrav => sphericalGravity;
+
+    public bool SelectiveObjects => selectiveObjects;
+    public List<string> SelectedTags => selectedTags;
     #endregion
 }

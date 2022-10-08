@@ -1,108 +1,36 @@
-You can download the Custom Attribute folder and place it anywhere in your Unity project. The scripts
-will start working automaticly. Below are more information about the various attributes and how to use them.
+The following scripts and assets are inspector tools, to validate or help
+manage the various variables that a script may have. These attributes can
+be used with unity's built in attributes. Only 1 attribte that are not 
+from Unity's built in attributes may be used for each variable. Unfortubately
+there is no way around this.
 
-PSA: These attributes will NOT work with each other due to how Unity Works, however it will work with Unity's
-built in attributes.
+Please keep in mind that the script and or asset may not be up to date!
 
-==============================================================================================================
+==============================================================================
 
-The "Read Only" attribute allows for any variable be seen in the inspector however the values can not be
-edited. The attribute will work with any data type.
+All other scritps created by me use these custom attributes. The scripts can 
+be modfied to not include the custom attributes. Simply remove the any custom
+attribute and remove "using ByteAttribute;" from the script and it will work.
 
-To use this attribute simply put [ReadOnly] beside the variable.
-[ReadOnly] public int a;
+For any script would like to use the custom attributes simply put 
+"using ByteAttribute;" at the top of the script.
 
-==============================================================================================================
+==============================================================================
 
-The "Absolute Value" attribute makes any numerical value positive. Why do would any need this?!
-I'm not sure myself! The attribute will work with any numerical data type.
+This is every custom attributes that are available for use.
+Custom Attributes:
 
-To use this attribute simply put [AbsoluteValue()] / [AbsoluteValue] beside the variable.
-[AbsoluteValue()] public int a;
-or
-[AbsoluteValue] public int a;
+[AbsoluteValue]
+[NegativeValue]
 
-==============================================================================================================
+[MinValue(X)]
+[MaxValue(X)]
 
-The "Negative Value" attribute makes any numerical value negative. Why do would any need this?!
-I'm not sure myself! The attribute will work with any data variable type.
+[MinMaxRange(X, Y)]
 
-To use this attribute simply put [NegativeValue()] / [NegativeValue] beside the variable.
-[NegativeValue()] public int a;
-or
-[NegativeValue] public int a;
+[ReadOnly]
 
-==============================================================================================================
+[EnumFlags]
 
-The "Min Max Range" attribute creates a double ended slider you can set the lowest possible value and the
-highest possible value. The attribute will only work with a Vector2 variable, and is similar to Unity's
-"Range" attribute.
-
-To use this attribute simply put [MinMaxRange(min value, max value)] beside a Vector2 variable.
-Floats: [MinMaxRange(min value, max value)] public Vector2 yourVariable;
-Ints:[MinMaxRange(min value, max value)] public Vector2Int yourVariable;
-
-==============================================================================================================
-
-The "Min Max Value" attribute clamps any numerical variable to the lowest / highest possible value. The
-attribute will only work with ints, floats, or doubles data types.
-
-To use this attribute simply put [MinValue(any number)] / [MaxValue(any number)] beside the variable.
-Floats: [MinValue(any number)] public float yourVariable;
-Ints:[MaxValue(any number)] public int yourVariable;
-
-==============================================================================================================
-
-The "Enum Flags" attribute allows you to select multiple enums at once in the inspector. The attribute will
-only work with enum variables.
-
-To use this attribute create an enum like this:
-[System.Flags]
-public enum MyEnum
-{
-    Flag0 = (1 << 0),
-    Flag1 = (1 << 1),
-    Flag2 = (1 << 2),
-    Flag3 = (1 << 3),
-}
- 
-Next use the tag:
-[EnumFlagsAttribute] MyEnum my_flags;
-
-To check if the enum variable contains one of the flags:
-my_flags.HasFlag(MyEnum.Flag);
-
-==============================================================================================================
-
-The "Show If" attribute allows for any variable to be hidden or shown based on another variable's value. This
-attribute will work with any data type.
-
-To use this attribute, simply place [ShowIf("Variable name", Condition)] with the condition beside the variable.
-public bool a;
-[ShowIf("a", true)] public bool b;
-
-==============================================================================================================
-
-The "Conditional Hide" attribute allows you to hide, disable, or enable variables based on another value. This
-attribute will work with any data type except for lists, arrays, and enums.
-
-To hide/show variables is simple use [ConditionalHide("variable name", true)]
-
-public bool A;
-[ConditionalHide("A", true)] public bool B;
-
-
-To disable the variables either remove the bool or set it to false;
-
-public bool A;
-[ConditionalHide("A", false)] public bool B;
-[ConditionalHide("A")] public bool C;
-
-==============================================================================================================
-
-The "Conditional Enum Hide" attribute allows you to hide, disable, or enable variables based on another value. 
-This attribute will only work with enums data types.
-
-enum EnumName {enumValue1, enumValue2}
-EnumName Variable;
-[ConditionalEnumHide("Variable", (int)EnumName.enumValue1)] public bool B;
+[ConditionalHide("Variable Name", bool)]
+[ConditionalEnumHide ("Variable Name", (int)enum)]

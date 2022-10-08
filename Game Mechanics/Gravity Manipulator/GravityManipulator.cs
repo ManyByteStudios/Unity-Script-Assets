@@ -60,7 +60,7 @@ public class GravityManipulator : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    protected void GravityStart() {
+    protected virtual void Start() {
         CurrentGravity = gravProperty.GravityForce;
     }
 
@@ -70,7 +70,16 @@ public class GravityManipulator : MonoBehaviour {
             // Finds every object with "GravityBody"
             tempBodies = FindObjectsOfType<GravityBody>();
             foreach (GravityBody i in tempBodies) {
-                i.AddManipulator(this);
+                if (gravProperty.SelectiveObjects) {
+                    foreach (string Tags in gravProperty.SelectedTags) {
+                        if (i.gameObject.CompareTag(Tags)) {
+                            i.AddManipulator(this);
+                        }
+                    }
+                }
+                else {
+                    i.AddManipulator(this);
+                }
             }
         }
     }
@@ -81,7 +90,16 @@ public class GravityManipulator : MonoBehaviour {
             // Finds every object with "GravityBody"
             tempBodies = FindObjectsOfType<GravityBody>();
             foreach (GravityBody i in tempBodies) {
-                i.AddManipulator(this);
+                if (gravProperty.SelectiveObjects) {
+                    foreach (string Tags in gravProperty.SelectedTags) {
+                        if (i.gameObject.CompareTag(Tags)) {
+                            i.AddManipulator(this);
+                        }
+                    }
+                }
+                else {
+                    i.AddManipulator(this);
+                }
             }
         }
     }
@@ -107,7 +125,7 @@ public class GravityManipulator : MonoBehaviour {
                 break;
             case GravityProperties.Gravity.Spherical:
                 // Determine the direction of the gravity and object "up" direction
-                GravityDirection = (ObjectTransform.position - transform.position).normalized;
+                GravityDirection = (ObjectTransform.localPosition - transform.localPosition).normalized;
                 ObjectUp = ObjectTransform.up;
 
                 // Apply gravity
@@ -137,10 +155,21 @@ public class GravityManipulator : MonoBehaviour {
     }
     #endregion
 
+    #region Gravity manipulator Collision Triggers
     protected virtual void OnTriggerEnter(Collider obj) {
-        obj.GetComponent<GravityBody>().AddManipulator(this);
+        if (gravProperty.SelectiveObjects) {
+            foreach (string Tags in gravProperty.SelectedTags) {
+                if (obj.gameObject.CompareTag(Tags)) {
+                    obj.GetComponent<GravityBody>().AddManipulator(this);
+                }
+            }
+        }
+        else {
+            obj.GetComponent<GravityBody>().AddManipulator(this);
+        }
     }
     protected virtual void OnTriggerExit(Collider obj) {
         obj.GetComponent<GravityBody>().RemoveManipulator(this);
     }
+    #endregion
 }

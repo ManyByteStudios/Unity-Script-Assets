@@ -28,9 +28,12 @@ Custom Attributes:
 
 [MinMaxRange(X, Y)]
 
-[ReadOnly]
-
-[EnumFlags]
+[ShowIf("Variable Name", bool)]
+[HideIf("Variable Name", bool)]
 
 [ConditionalHide("Variable Name", bool)]
 [ConditionalEnumHide ("Variable Name", (int)enum)]
+
+[ReadOnly]
+
+[EnumFlags]

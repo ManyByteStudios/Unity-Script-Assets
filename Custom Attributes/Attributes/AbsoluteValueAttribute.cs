@@ -1,13 +1,11 @@
-﻿using System;
-using UnityEngine;
+using System;
 
-namespace ByteAttribute {
+namespace ByteAttributes {
 
-    /// <summary>
-    /// Absolute Value Attribute forces any numerical value
-    /// to be a positive value.
-    /// </summary>
+	/// <summary>
+	/// Forces any numerical value to be a positive numerical value.
+	/// </sumary>
 
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public class AbsoluteValueAttribute : ValidatorAttribute { }
+	[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+	public class AbsoluteValueAttribute : ValidatorAttribute { }
 }

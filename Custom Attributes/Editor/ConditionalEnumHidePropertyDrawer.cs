@@ -1,8 +1,7 @@
-using System;
 using UnityEngine;
 using UnityEditor;
 
-namespace ByteAttribute.Editor {
+namespace ByteAttributes.Editor {
 
     /// <summary>
     /// This script is the logic for hiding variables using a condition

@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace ByteAttribute.Editor {
+namespace ByteAttributes.Editor {
 
     /// <summary>
     /// This script uses the Unity Editor MinMaxSlider

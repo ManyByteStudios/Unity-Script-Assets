@@ -1,6 +1,6 @@
 using System;
 
-namespace ByteAttribute {
+namespace ByteAttributes {
 
     /// <summary>
     /// This script allows to hide/show, enable or disable variables

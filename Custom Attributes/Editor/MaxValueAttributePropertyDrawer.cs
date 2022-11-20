@@ -4,24 +4,25 @@ using UnityEditor;
 namespace ByteAttributes.Editor {
 
     /// <summary>
-    /// This script contains the logic for the "Negative Value" attribute.
-    /// The script will check for the type of numerical variable as well as
-    /// checking if the value is over zero to multiply by -1.
-    /// </sumary>
+    /// This script contains the logic for the "Max Value" attribute.
+    /// Clamping the value to the maxiumum possible value.
+    /// </summary>
 
-    [CustomPropertyDrawer(typeof(NegativeValueAttribute))]
-    public class NegativeValuePropertyDrawer : PropertyDrawer {
+    [CustomPropertyDrawer(typeof(MaxValueAttribute))]
+    public class MaxValueAttributePropertyDrawer : PropertyDrawer {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+            MaxValueAttribute Max = (MaxValueAttribute)attribute;
+
             if (property.propertyType == SerializedPropertyType.Integer) {
-                if (property.intValue > 0) {
-                    property.intValue *= -1;
+                if (property.intValue > Max.maxValue) {
+                    property.intValue = (int)Max.maxValue;
                 }
 
                 property.intValue = EditorGUI.IntField(position, label, property.intValue);
             }
             else if (property.propertyType == SerializedPropertyType.Float) {
-                if (property.floatValue > 0) {
-                    property.floatValue *= -1;
+                if (property.floatValue > Max.maxValue) {
+                    property.floatValue = (float)Max.maxValue;
                 }
 
                 property.floatValue = EditorGUI.FloatField(position, label, property.floatValue);

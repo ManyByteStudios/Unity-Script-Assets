@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ByteAttribute {
+namespace ByteAttributes {
 
     /// <summary>
     /// This script is contains the attribute arguments for the

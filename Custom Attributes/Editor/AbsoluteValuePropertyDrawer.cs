@@ -1,14 +1,13 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
-namespace ByteAttribute.Editor {
+namespace ByteAttributes.Editor {
 
     /// <summary>
-    /// The logic of the attribute "AbsoluteValue" is simple.
-    /// it just checks if its a integer, float or somthing else.
-    /// It will simply make any negative number into positive using
-    /// Mathf.abs.
-    /// </summary>
+    /// This script contains the logic for the "Absolute Value" attribute.
+    /// The script will check for the type of numerical variable and using
+    /// Mathf.abs, it will force the value to be positive.
+    /// </sumary>
 
     [CustomPropertyDrawer(typeof(AbsoluteValueAttribute))]
     public class AbsoluteValuePropertyDrawer : PropertyDrawer {

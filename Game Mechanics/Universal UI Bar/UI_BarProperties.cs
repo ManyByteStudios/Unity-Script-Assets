@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.Image;
+using ByteAttributes;
 
 /// <summary>
 /// A scriptable object for the UniversalUIBar script.
@@ -21,16 +19,18 @@ public class UI_BarProperties : ScriptableObject {
     [Header("UI Bar Properties")]
     [Tooltip("Image sprite.")]
     [SerializeField] Sprite imageSprite = null;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
 
-    [Space(10)]
     [Tooltip("Slowly fill the UI bar.")]
     [SerializeField] bool smoothFillBar = false;
     [Tooltip("Fill speed of the UI bar.")]
     [ConditionalHide("SmoothFillBar", true)][SerializeField] float fillSpeed = 0;
     [Tooltip("Set the start fill amount.")]
     [Range(0, 1)][SerializeField] float startFillPercent = 0.5f;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
 
-    [Space(10)]
     [Tooltip("Fill origion from the center.")]
     [SerializeField] bool fillFromCenter = false;
     [Tooltip("Flip the fill direction.")]
@@ -39,8 +39,9 @@ public class UI_BarProperties : ScriptableObject {
     [ConditionalEnumHide("fillType", (int)FillMethod.Radial360)][SerializeField] bool customRadialUI = false;
     [Tooltip("Set the custom radial amount for the UI.")]
     [ConditionalHide("customRadialUI", true)][SerializeField][Range(0, 360)] int customRadial = 360;
-
     [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
     [Tooltip("Vertical fill bar or horizontal fill bar.")]
     [SerializeField] FillMethod fillType = FillMethod.Horizontal;
     [Tooltip("Fill direction of the UI image.")]
@@ -49,19 +50,22 @@ public class UI_BarProperties : ScriptableObject {
     [ShowIf("fillType", (int)FillMethod.Horizontal)][SerializeField] H_FillOrigin horizontalFillOrigin = H_FillOrigin.Left;
     [Tooltip("Fill direction of the UI image.")]
     [ShowIf("fillType", (int)FillMethod.Radial360)][SerializeField] R_FillOrigin radialFillOrigin = R_FillOrigin.Bottom;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
 
-    [Space(10)]
     [Tooltip("Allow for over fill.")]
     [SerializeField] bool canOverFill = false;
     [ShowIf("canOverFill", true)][SerializeField] Color overFillColor = Color.blue;
-
     [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
     [Tooltip("Range for positive color on UI bar.")]
     [SerializeField][MinMaxRange(0, 1)] Vector2 positiveRange = new Vector2(0.75f, 1f);
     [Tooltip("Color of UI bar when high.")]
     [SerializeField] Color positiveColor = Color.green;
-
     [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
     [Tooltip("Range for negative color on UI bar.")]
     [SerializeField][MinMaxRange(0, 1)] Vector2 negativeRange = new Vector2(0f, 0.25f);
     [Tooltip("Color of UI bar when low.")]

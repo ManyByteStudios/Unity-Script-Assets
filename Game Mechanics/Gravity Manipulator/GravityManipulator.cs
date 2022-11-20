@@ -1,7 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// This script manipulates the forces applied on any
@@ -17,7 +15,7 @@ public class GravityManipulator : MonoBehaviour {
     #region Gravity Manipulator Values
     [Header("Gravity Manipulation Properties")]
     [Tooltip("Gravity manipulator scriptable object.")]
-    [SerializeField] private GravityProperties gravProperty = null;
+    [NotNullable] [SerializeField] private GravityProperties gravProperty = null;
 
     float CurrentGravity = 0;
     GravityBody[] tempBodies;
@@ -71,8 +69,8 @@ public class GravityManipulator : MonoBehaviour {
             tempBodies = FindObjectsOfType<GravityBody>();
             foreach (GravityBody i in tempBodies) {
                 if (gravProperty.SelectiveObjects) {
-                    foreach (string Tags in gravProperty.SelectedTags) {
-                        if (i.gameObject.CompareTag(Tags)) {
+                    for (int a = 0; a < gravProperty.ObjectTags.Count; a++) {
+                        if (i.gameObject.CompareTag(gravProperty.ObjectTags[a].objectTag)) {
                             i.AddManipulator(this);
                         }
                     }
@@ -91,8 +89,8 @@ public class GravityManipulator : MonoBehaviour {
             tempBodies = FindObjectsOfType<GravityBody>();
             foreach (GravityBody i in tempBodies) {
                 if (gravProperty.SelectiveObjects) {
-                    foreach (string Tags in gravProperty.SelectedTags) {
-                        if (i.gameObject.CompareTag(Tags)) {
+                    for (int a = 0; a < gravProperty.ObjectTags.Count; a++) {
+                        if (i.gameObject.CompareTag(gravProperty.ObjectTags[a].objectTag)) {
                             i.AddManipulator(this);
                         }
                     }
@@ -104,8 +102,11 @@ public class GravityManipulator : MonoBehaviour {
         }
     }
 
-    // This script will be called by the "GravityBody" 
-    // script to apply gravitational force
+    /// <summary>
+    /// Applies the gravity force on objects with the GravBody script.
+    /// </summary>
+    /// <param name="ObjectBody"></param>
+    /// <param name="ObjectTransform"></param>
     public void ApplyGravity(Rigidbody ObjectBody, Transform ObjectTransform) {
         switch (gravProperty.GravityType) {
             case GravityProperties.Gravity.Directional:
@@ -158,8 +159,8 @@ public class GravityManipulator : MonoBehaviour {
     #region Gravity manipulator Collision Triggers
     protected virtual void OnTriggerEnter(Collider obj) {
         if (gravProperty.SelectiveObjects) {
-            foreach (string Tags in gravProperty.SelectedTags) {
-                if (obj.gameObject.CompareTag(Tags)) {
+            for (int a = 0; a < gravProperty.ObjectTags.Count; a++) {
+                if (obj.gameObject.CompareTag(gravProperty.ObjectTags[a].objectTag)) {
                     obj.GetComponent<GravityBody>().AddManipulator(this);
                 }
             }

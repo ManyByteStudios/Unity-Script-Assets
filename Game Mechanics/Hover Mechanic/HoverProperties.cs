@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// A scriptable object for the HoverPhysics script.
@@ -16,7 +15,8 @@ public class HoverProperties : ScriptableObject {
     [MinValue(0)][SerializeField] float drag = 1;
     [Tooltip("Speed of slowing down rotational movement.")]
     [MinValue(0)][SerializeField] float angularDrag = 1;
-    [Space(10)]
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
     [Header("Hover Physcis Properties")]
     [SerializeField] bool isHovering = true;
     [Tooltip("Locations of where the hover force is applied.")]

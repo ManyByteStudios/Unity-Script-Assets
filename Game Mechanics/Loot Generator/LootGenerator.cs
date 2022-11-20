@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// This is a simple script where the core logic of loot prize / reward 
@@ -11,9 +10,13 @@ using UnityEngine;
 public class GachaLoot : MonoBehaviour {
     [Header("Gatcha Loot Properties")]
     [Tooltip("Gatcha loot scriptable object.")]
-    [SerializeField] private GatchaLootProperties lootProperty;
+    [NotNullable] [SerializeField] private GatchaLootProperties lootProperty;
 
-    // This method can be called from another script to generate the loot drop
+    /// <summary>
+    /// Randomly selects loot from the provided loot table.
+    /// </summary>
+    /// <param name="NumberOfRewards"></param>
+    /// <returns></returns>
     protected GameObject[] GenerateLoot(int NumberOfRewards) {
         int MaxLootPool = 1;
         GameObject[] GeneratedLoot = null;

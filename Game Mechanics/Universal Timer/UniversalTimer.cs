@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// This is a universal timer script, the script allows for the
@@ -11,7 +10,7 @@ public class UniversalTimer : MonoBehaviour {
     #region Timer Properties
     [Header("Timer Properties")]
     [Tooltip("Timer scriptable object.")]
-    [SerializeField] private TimerProperties timerProperty;
+    [NotNullable] [SerializeField] TimerProperties timerProperty;
 
     TimerProperties.TimerFunction CurrentFunction;
     bool isRunning = false;
@@ -27,7 +26,9 @@ public class UniversalTimer : MonoBehaviour {
     #endregion
 
     #region Core Timer Functions
-    // Timer function that can be used in other class in the update method
+    /// <summary>
+    /// Core timer function.
+    /// </summary>
     protected void RunTimer() {
         if (!timerProperty.TimerIsPause) {
             switch (timerProperty.Function) {
@@ -51,12 +52,17 @@ public class UniversalTimer : MonoBehaviour {
         }
     }
 
-    // A simple way to pause and unpause the timer script
+    /// <summary>
+    /// Pause and Unpause timer.
+    /// </summary>
     protected void PauseUnpauseTimer() {
         isRunning = !timerProperty.TimerIsPause;
     }
 
-    // Resetting the timer based on the current function, the TotalTime variable is only required for the CountingDown function
+    /// <summary>
+    /// Reset timer based on the current function.
+    /// </summary>
+    /// <param name="TotalTime"></param>
     protected void ResetTimer(int TotalTime = 0) {
         isRunning = true;
 
@@ -81,15 +87,30 @@ public class UniversalTimer : MonoBehaviour {
         }
     }
 
-    // Method to get the timer string
+    /// <summary>
+    /// Get the text for the timer.
+    /// </summary>
+    /// <returns></returns>
     protected string TimerText() {
-        string ReturnText = Minutes + ":" + Seconds;
+        string ReturnText = null;
+        switch (timerProperty.OutputInclusion) {
+            case TimerProperties.TimerOutputInclusion.Minutes:
+                ReturnText = Minutes;
+                break;
+            case TimerProperties.TimerOutputInclusion.Seconds:
+                ReturnText = Minutes + ":" + Seconds;
+                break;
+        }
+        
         return ReturnText;
     }
     #endregion
 
     #region Changing Function
-    // Alternates between the various timer function
+    /// <summary>
+    /// Swap timer function.
+    /// </summary>
+    /// <param name="TotalTime"></param>
     protected void SwitchTimerFunction(int TotalTime = 0) {
         isRunning = true;
 
@@ -113,7 +134,9 @@ public class UniversalTimer : MonoBehaviour {
         }
     }
 
-    // Setter functions to change to the specific timer function
+    /// <summary>
+    /// Change timer function to count up.
+    /// </summary>
     protected void SetTimerCountUp() {
         isRunning = true;
         CurrentFunction = TimerProperties.TimerFunction.CountingUp;
@@ -122,6 +145,10 @@ public class UniversalTimer : MonoBehaviour {
         Minutes = ((int)CurrentTime / 60).ToString();
         Seconds = (CurrentTime % 60).ToString("f2");
     }
+
+    /// <summary>
+    /// Change timer function to count down.
+    /// </summary>
     protected void SetTimerCountDown(int TotalTime = 0) {
         isRunning = true;
         CurrentFunction = TimerProperties.TimerFunction.CountingDown;

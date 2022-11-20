@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// This script allows for the manipulation of player or game stats,
@@ -16,7 +14,7 @@ public class StatModifier : MonoBehaviour {
     #region Stat Modifier Upgrade Properties
     [Header("Stat Modifier Properties")]
     [Tooltip("Stat modifier scriptable object.")]
-    [SerializeField] private StatModifierProperties statModifierProperty;
+    [NotNullable] [SerializeField] private StatModifierProperties statModifierProperty;
 
     // Private variables
     int CurrentLevel = 0;

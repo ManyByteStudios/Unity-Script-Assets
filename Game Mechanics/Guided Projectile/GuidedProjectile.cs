@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// This is a simple script that allows any projectile based object
@@ -14,7 +13,7 @@ public class GuidedProjectile : MonoBehaviour {
     #region Variables
     [Header("Guided Projectile Properties")]
     [Tooltip("Guided projectile scriptable object.")]
-    [SerializeField] private GuidedProjectileProperties guidedProjectileProperty = null;
+    [NotNullable] [SerializeField] private GuidedProjectileProperties guidedProjectileProperty = null;
 
     Rigidbody ProjectileBody;
     GameObject TargetObj;
@@ -26,7 +25,10 @@ public class GuidedProjectile : MonoBehaviour {
     float InitalVelocity;
     #endregion
 
-    // Main meathod of the script, should be used during fixed update
+    /// <summary>
+    /// This must be called in the fixed update method and is the core function of the script.
+    /// </summary>
+    /// <param name="InputVector"></param>
     protected void ControlProjectile(Vector2 InputVector = default(Vector2)) {
         IsTracking = guidedProjectileProperty.IsTracking;
         if (guidedProjectileProperty.SetInitalVelocity) {
@@ -69,7 +71,10 @@ public class GuidedProjectile : MonoBehaviour {
         }
     }
 
-    // Applies the change in position or direction by slowly rotating the projectile while moving "forward"
+    /// <summary>
+    /// Appiles the the forward movement for based on the object's forward direction.
+    /// </summary>
+    /// <param name="TargetRotation"></param>
     void ApplyNewDirection(Quaternion TargetRotation) {
         ProjectileBody.MoveRotation(Quaternion.RotateTowards(transform.rotation, TargetRotation, guidedProjectileProperty.TurnRate));
 
@@ -86,17 +91,25 @@ public class GuidedProjectile : MonoBehaviour {
         }
     }
 
-    // Change target for the projectile
+    /// <summary>
+    /// Set target for projectile
+    /// </summary>
+    /// <param name="NewTarget"></param>
     protected void SetTarget(GameObject NewTarget = null) {
         TargetObj = NewTarget;
     }
 
-    // Set target location
+    /// <summary>
+    /// Set position to target for projectile
+    /// </summary>
+    /// <param name="TargetPos"></param>
     protected void SetTargetPosition(Vector3 TargetPos) {
         LaserTarget = TargetPos;
     }
 
-    // Enables or disables tracking of the projectile
+    /// <summary>
+    /// Enable or disable the homing function.
+    /// </summary>
     protected void EnableTracking() {
         IsTracking = !IsTracking;
     }

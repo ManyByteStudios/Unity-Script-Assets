@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// A scriptable object for the DroneController script.
@@ -15,7 +14,8 @@ public class DroneProperties : ScriptableObject {
     [SerializeField] protected bool uniformTilt = true;
     [Tooltip("Drone Parts that will be tilting.")]
     [SerializeField] protected TiltComponents tiltComponents = null;
-    [Space(15)]
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
     [Header("Drone Movement")]
     [Tooltip("Drone movement speed and tilt for forward and strafe movement is the same.")]
     [SerializeField] bool uniformMovement = true;
@@ -27,20 +27,22 @@ public class DroneProperties : ScriptableObject {
     [SerializeField][ConditionalHide("NotUniform", true)] float forwardSpeed = 0;
     [Tooltip("Drone's movement speed for strafe movement.")]
     [SerializeField][ConditionalHide("NotUniform", true)] float strafeSpeed = 0;
-    [Space(5)]
+    [Space(10)]
     [Tooltip("Acceleration speed of the drone 'x', and the deceleration speed of the the drone 'y'.")]
     [SerializeField][AbsoluteValue] Vector2 accelNDecelSpeed = Vector2.zero;
-    [Space(5)]
+    [Space(20)]
     [Tooltip("Allow to change the elevation of the drone by input.")]
     [SerializeField] bool enableElevationChange = true;
     [Tooltip("The speed of the drone moving up and down, 'x' is the speed going up, and 'y' is the speed going down.")]
     [SerializeField][ConditionalHide("enableElevationChange", true)] Vector2 elevationSpeed = Vector2.zero;
-    [Space(10)]
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
     [Tooltip("The amount the drone rotates left and right.")]
     [SerializeField][AbsoluteValue] float droneRotationAmount = 0f;
     [Tooltip("The speed of the drone rotation.")]
     [SerializeField][AbsoluteValue] private float droneRotationSpeed = 0f;
-    [Space(10)]
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
     [Tooltip("Drone's movement tilt for all directional movement.")]
     [SerializeField][ConditionalHide("uniformMovement", true)] float tiltAmount = 0;
     [Tooltip("Speed of drone's tilt when moving.")]

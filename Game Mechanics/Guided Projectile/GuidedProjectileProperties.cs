@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// A scriptable object for the GuidedProjectile script.
@@ -26,9 +25,9 @@ public class GuidedProjectileProperties : ScriptableObject {
     [SerializeField][ConditionalHide("setInitalVelocity", true)] float projectileVelocity = 0;
     [Tooltip("Force stop the guided projectile at start.")]
     [SerializeField] bool isTracking = false;
-
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
     [Header("Control Guided Values")]
-    [Space(20)]
     [Tooltip("Used for input control.")]
     [SerializeField][ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] float inputSmoothing = 0;
     [Tooltip("Used for input control.")]

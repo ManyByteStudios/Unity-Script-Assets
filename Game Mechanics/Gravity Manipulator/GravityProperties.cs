@@ -1,6 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
+using System.Collections.Generic;
 
 /// <summary>
 /// A scriptable object for the GravityManipulator script.
@@ -20,6 +20,8 @@ public class GravityProperties : ScriptableObject {
     [SerializeField] float gravityForce = 9.81f;
     [Tooltip("The speed of the object rotatating upwards relative to gravity direction.")]
     [SerializeField] float rotationSpeed = 50f;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
     [Tooltip("Limited Gravity Range.")]
     [SerializeField] bool limitedGravityArea = true;
     [Space(10)]
@@ -29,11 +31,12 @@ public class GravityProperties : ScriptableObject {
     [SerializeField][ConditionalHide("limitedGravityArea", true)] DirectionalGravity directionalGravity = null;
     [Tooltip("Area for gravity.")]
     [SerializeField][ConditionalHide("limitedGravityArea", true)] SphericalGravity sphericalGravity = null;
-    [Space(10)]
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
     [Tooltip("Gravity manipulator affects only listed objects with selective tags.")]
     [SerializeField] bool selectiveObjects = false;
     [Tooltip("All tags that will be affect by the gravity manipulator.")]
-    [SerializeField] [ConditionalHide("SelectiveObjects", true)] List<string> selectedTags = null;
+    [SerializeField] List<SelectiveTags> objectTags = null;
 
     [System.Serializable]
     public class GravityAxis {
@@ -49,6 +52,11 @@ public class GravityProperties : ScriptableObject {
     public class SphericalGravity {
         [ConditionalEnumHideAttribute("gravityType", (int)Gravity.Spherical)] public float gravityRadius = 1;
     }
+
+    [System.Serializable]
+    public class SelectiveTags {
+        [Tag] public string objectTag = null;
+    }
     #endregion
 
     #region Final Script Values
@@ -62,6 +70,6 @@ public class GravityProperties : ScriptableObject {
     public SphericalGravity SphericalGrav => sphericalGravity;
 
     public bool SelectiveObjects => selectiveObjects;
-    public List<string> SelectedTags => selectedTags;
+    public List<SelectiveTags> ObjectTags => objectTags;
     #endregion
 }

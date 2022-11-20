@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ByteAttributes;
 
 /// <summary>
 /// This script manipulates a UI images to create
@@ -17,7 +18,7 @@ public class UniversalUIBar : MonoBehaviour {
     #region Universal UI Bar Properties
     [Header("Stat Modifier Properties")]
     [Tooltip("Stat modifier scriptable object.")]
-    [SerializeField] private UI_BarProperties UI_BarProperty;
+    [NotNullable] [SerializeField] private UI_BarProperties UI_BarProperty;
     [Space(10)]
     [Tooltip("List of images for UI bar.")]
     [SerializeField] private List<Image> UI_Images = new List<Image>(2);

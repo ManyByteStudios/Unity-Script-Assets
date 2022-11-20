@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary> 
 /// This script provides any information that the 
@@ -19,14 +18,18 @@ public class GravityBody : MonoBehaviour {
     public List<GravityManipulator> GravityManipulators = new List<GravityManipulator>();
     #endregion
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Initalize with Start().
+    /// </summary>
     public void InitalizeGravBody() {
         ObjectBody = GetComponent<Rigidbody>();
         ObjectBody.useGravity = false;
         ObjectTransform = GetComponent<Transform>();
     }
 
-    // Same Method as FixedUpdate but is open for those who do not wish to override
+    /// <summary>
+    /// Must be used during FixedUpdate() for gravitation force to take affect.
+    /// </summary>
     public void GravBodyFixedUpdate() {
         if (enableGravity && GravityManipulators != null) {
             foreach (GravityManipulator manipulator in GravityManipulators) {

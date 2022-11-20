@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEditor;
 
-namespace ByteAttribute.Editor {
+namespace ByteAttributes.Editor {
 
     /// <summary>
     /// This script limits the value for the variables based on the 

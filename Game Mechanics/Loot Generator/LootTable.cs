@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// A scriptable object for the GatchaLoot script.
 /// Will create a loot table for the script.
 /// </summary>
 
-[CreateAssetMenu(fileName = "Gatcha Loot Table", menuName = "Scriptable Objects/Gatcha Loot")]
+[CreateAssetMenu(fileName = "Loot Table", menuName = "Scriptable Objects/Loot Table")]
 public class GatchaLootProperties : ScriptableObject {
     #region Editable Values
     [Header("Loot Properties")]

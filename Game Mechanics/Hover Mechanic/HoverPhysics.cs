@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// This script allows for any object with ot have
@@ -16,7 +15,7 @@ public class HoverPhysics : MonoBehaviour {
     #region Hover Properites
     [Header("Hover Properties")]
     [Tooltip("Hover scriptable object.")]
-    [SerializeField] private HoverProperties hoverProperty;
+    [NotNullable] [SerializeField] private HoverProperties hoverProperty;
 
     float TotalMass;
     bool IsHovering;
@@ -34,7 +33,9 @@ public class HoverPhysics : MonoBehaviour {
     }
     #endregion
 
-    // Hover function must be called in FixedUpdate
+    /// <Summary>
+    /// Hover function must be called in FixedUpdate
+    /// </Summary>
     public void Hover() {
         if (hoverProperty.IsHovering) {
             RaycastHit hit;

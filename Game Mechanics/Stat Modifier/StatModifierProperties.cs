@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// A scriptable object for the StatModifier script.
@@ -20,7 +19,8 @@ public class StatModifierProperties : ScriptableObject {
     [SerializeField] bool limitedModifierLevels = true;
     [Tooltip("The max level or number of upgrades for the modifier, limit is set to 20.")]
     [SerializeField][ConditionalHide("limitedModifierLevels", true)] int maxModifierLevel = 1;
-    [Space(10)]
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
     [Tooltip("Number of stats to be modified and its properties.")]
     [SerializeField] StatProperties[] statProperties = new StatProperties[1];
 

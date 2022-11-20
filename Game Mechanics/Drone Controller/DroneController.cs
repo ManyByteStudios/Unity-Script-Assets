@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ByteAttributes;
 
 /// <summary>
 /// This script allows for an object to have
@@ -17,7 +16,7 @@ using UnityEngine;
 public class DroneController : MonoBehaviour {
     [Header("Drone Controller Properties")]
     [Tooltip("Drone scriptable object.")]
-    [SerializeField] private DroneProperties droneProperty = null;
+    [NotNullable] [SerializeField] private DroneProperties droneProperty = null;
     
     //Private values
     Rigidbody DroneBody;

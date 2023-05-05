@@ -10,10 +10,44 @@ using ByteAttributes;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody))]
 public class GuidedProjectile : MonoBehaviour {
+    public enum GuidanceSystem { Controlled, Homming, Laser }
+    public enum ForwardAxis { X_Axis, Y_Axis, Z_Axis }
+
     #region Variables
     [Header("Guided Projectile Properties")]
-    [Tooltip("Guided projectile scriptable object.")]
-    [NotNullable] [SerializeField] private GuidedProjectileProperties guidedProjectileProperty = null;
+    [Tooltip("Player controlled or self guided projectile.")]
+    [SerializeField] GuidanceSystem guidanceMethod = GuidanceSystem.Controlled;
+    [Tooltip("Direction of the projectile (what is forward).")]
+    [SerializeField] ForwardAxis forwardDirection = ForwardAxis.X_Axis;
+    [Tooltip("Speed of the projectile's turn.")]
+    [SerializeField] [Range(0, 1)] float turnRate = 0.5f;
+    [Space(5)]
+    [SerializeField] bool setInitalVelocity = false;
+    [Tooltip("Set the starting velocity.")]
+    [SerializeField] [ConditionalHide("setInitalVelocity", true)] float projectileVelocity = 0;
+    [Tooltip("Force stop the guided projectile at start.")]
+    [SerializeField] bool isTracking = false;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+    [Header("Control Guided Values")]
+    [Tooltip("Used for input control.")]
+    [SerializeField] [ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] float inputSmoothing = 0;
+    [Tooltip("Used for input control.")]
+    [SerializeField] [ConditionalEnumHide("guidanceMethod", (int)GuidanceSystem.Controlled)] float inputSensitivity = 0;
+
+    [ExecuteInEditMode]
+    private void OnValidate() {
+        if (projectileVelocity < 0) {
+            projectileVelocity = 0;
+        }
+        if (inputSmoothing < 0) {
+            inputSmoothing = 0;
+        }
+        if (inputSensitivity < 0) {
+            inputSensitivity = 0;
+        }
+    }
+
 
     Rigidbody ProjectileBody;
     GameObject TargetObj;
@@ -30,9 +64,9 @@ public class GuidedProjectile : MonoBehaviour {
     /// </summary>
     /// <param name="InputVector"></param>
     protected void ControlProjectile(Vector2 InputVector = default(Vector2)) {
-        IsTracking = guidedProjectileProperty.IsTracking;
-        if (guidedProjectileProperty.SetInitalVelocity) {
-            InitalVelocity = guidedProjectileProperty.ProjectileVelocity;
+        IsTracking = isTracking;
+        if (setInitalVelocity) {
+            InitalVelocity = projectileVelocity;
         }
         else {
             InitalVelocity = ProjectileBody.velocity.magnitude;
@@ -45,23 +79,23 @@ public class GuidedProjectile : MonoBehaviour {
         }
         else {
             if (IsTracking) {
-                switch (guidedProjectileProperty.GuidanceMethod) {
-                    case GuidedProjectileProperties.GuidanceSystem.Homming:
+                switch (guidanceMethod) {
+                    case GuidanceSystem.Homming:
                         Quaternion HomingDirection = Quaternion.LookRotation(TargetObj.transform.position - this.transform.position);
 
                         ApplyNewDirection(HomingDirection);
                         break;
-                    case GuidedProjectileProperties.GuidanceSystem.Controlled:
+                    case GuidanceSystem.Controlled:
                         var NewDirection = new Vector2(-InputVector.y, InputVector.x);
 
-                        NewDirection = Vector2.Scale(NewDirection, new Vector2(guidedProjectileProperty.InputSensitivity * guidedProjectileProperty.InputSmoothing, guidedProjectileProperty.InputSensitivity * guidedProjectileProperty.InputSmoothing));
-                        SmoothedVector.x = Mathf.Lerp(SmoothedVector.x, NewDirection.x, 1f / guidedProjectileProperty.InputSmoothing);
-                        SmoothedVector.y = Mathf.Lerp(SmoothedVector.y, NewDirection.y, 1f / guidedProjectileProperty.InputSmoothing);
+                        NewDirection = Vector2.Scale(NewDirection, new Vector2(inputSensitivity * inputSmoothing, inputSensitivity * inputSmoothing));
+                        SmoothedVector.x = Mathf.Lerp(SmoothedVector.x, NewDirection.x, 1f / inputSmoothing);
+                        SmoothedVector.y = Mathf.Lerp(SmoothedVector.y, NewDirection.y, 1f / inputSmoothing);
                         ControlledDirection += SmoothedVector;
 
                         ApplyNewDirection(Quaternion.Euler(ControlledDirection));
                         break;
-                    case GuidedProjectileProperties.GuidanceSystem.Laser:
+                    case GuidanceSystem.Laser:
                         Quaternion LaserDirection = Quaternion.LookRotation(LaserTarget - this.transform.position);
 
                         ApplyNewDirection(LaserDirection);
@@ -76,20 +110,91 @@ public class GuidedProjectile : MonoBehaviour {
     /// </summary>
     /// <param name="TargetRotation"></param>
     void ApplyNewDirection(Quaternion TargetRotation) {
-        ProjectileBody.MoveRotation(Quaternion.RotateTowards(transform.rotation, TargetRotation, guidedProjectileProperty.TurnRate));
+        ProjectileBody.MoveRotation(Quaternion.RotateTowards(transform.rotation, TargetRotation, turnRate));
 
-        switch (guidedProjectileProperty.ForwardDriection) {
-            case GuidedProjectileProperties.ForwardAxis.X_Axis:
+        switch (forwardDirection) {
+            case ForwardAxis.X_Axis:
                 ProjectileBody.velocity = transform.right * InitalVelocity;
                 break;
-            case GuidedProjectileProperties.ForwardAxis.Y_Axis:
+            case ForwardAxis.Y_Axis:
                 ProjectileBody.velocity = transform.up * InitalVelocity;
                 break;
-            case GuidedProjectileProperties.ForwardAxis.Z_Axis:
+            case ForwardAxis.Z_Axis:
                 ProjectileBody.velocity = transform.forward * InitalVelocity;
                 break;
         }
     }
+
+    #region Getters and Setters
+    /// <summary>
+    /// Change the input smoothing.
+    /// </summary>
+    /// <param name="NewInputSmoothing"></param>
+    protected void SetInputSmoothing(float NewInputSmoothing) {
+        inputSmoothing = NewInputSmoothing;
+    }
+    /// <summary>
+    /// Get the input smoothing value.
+    /// </summary>
+    /// <returns></returns>
+    protected float GetInputSmoothing() {
+        return inputSmoothing;
+    }
+    /// <summary>
+    /// Change the input sensitivity.
+    /// </summary>
+    protected void SetInputSensitivity(float NewInputSensitivity) {
+        inputSensitivity = NewInputSensitivity;
+    }
+    /// <summary>
+    /// Get the input sensitivity value.
+    /// </summary>
+    /// <returns></returns>
+    protected float GetInputSensitivity() {
+        return inputSensitivity;
+    }
+    /// <summary>
+    /// Change the turn speed.
+    /// </summary>
+    protected void SetTurnSpeed(float NewTurnSpeed) {
+        turnRate = NewTurnSpeed;
+    }
+    /// <summary>
+    /// Get the turn rate for the projectile.
+    /// </summary>
+    /// <returns></returns>
+    protected float GetTurnSpeed() {
+        return turnRate;
+    }
+    /// <summary>
+    /// Change the projectiles velocity.
+    /// </summary>
+    /// <param name="VelocityChange"></param>
+    protected void ChangeInitalVelocity(float VelocityChange) {
+        float Speed = ProjectileBody.velocity.magnitude;
+        Speed += VelocityChange;
+
+        switch (forwardDirection) {
+            case ForwardAxis.X_Axis:
+                ProjectileBody.velocity = transform.right * Speed;
+                break;
+            case ForwardAxis.Y_Axis:
+                ProjectileBody.velocity = transform.up * Speed;
+                break;
+            case ForwardAxis.Z_Axis:
+                ProjectileBody.velocity = transform.forward * Speed;
+                break;
+        }
+    }
+    /// <summary>
+    /// Get the projectile's speed.
+    /// </summary>
+    /// <returns></returns>
+    protected float GetVelocity() {
+        return ProjectileBody.velocity.magnitude;
+    }
+    
+
 
     /// <summary>
     /// Set target for projectile
@@ -97,6 +202,13 @@ public class GuidedProjectile : MonoBehaviour {
     /// <param name="NewTarget"></param>
     protected void SetTarget(GameObject NewTarget = null) {
         TargetObj = NewTarget;
+    }
+    /// <summary>
+    /// Returns to targeted object
+    /// </summary>
+    /// <returns></returns>
+    protected GameObject GetTarget() {
+        return TargetObj;
     }
 
     /// <summary>
@@ -106,6 +218,13 @@ public class GuidedProjectile : MonoBehaviour {
     protected void SetTargetPosition(Vector3 TargetPos) {
         LaserTarget = TargetPos;
     }
+    /// <summary>
+    /// Returns a vector 3 position for laser targeting
+    /// </summary>
+    /// <returns></returns>
+    protected Vector3 GetTargetedPosition() {
+        return LaserTarget;
+    }
 
     /// <summary>
     /// Enable or disable the homing function.
@@ -113,4 +232,5 @@ public class GuidedProjectile : MonoBehaviour {
     protected void EnableTracking() {
         IsTracking = !IsTracking;
     }
+    #endregion
 }

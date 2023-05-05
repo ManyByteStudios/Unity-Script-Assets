@@ -5,9 +5,6 @@ to have multiple objects with the same script or use inheritance to have multipl
 versions of the script. To inherit the scrip simply replace "MonoBehaviour" with
 this script's class name, "HoverPhysics".
 
-This script comes with a Scriptable object that contains every variable this script
-uses.
-
 IF the script does not work or you do not wish to download the Custom Attributes simply remove 
 the various custom attributes and the code will run fine.
 

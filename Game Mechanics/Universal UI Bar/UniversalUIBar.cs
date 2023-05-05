@@ -15,10 +15,70 @@ using ByteAttributes;
 
 [DisallowMultipleComponent]
 public class UniversalUIBar : MonoBehaviour {
+    #region Universal UI Bar Enums
+    public enum FillMethod { Horizontal, Vertical, Radial360 }
+    public enum H_FillOrigin { Right, Left }
+    public enum V_FillOrigin { Bottom, Top }
+    public enum R_FillOrigin { Bottom, Right, Top, Left }
+    #endregion
+
     #region Universal UI Bar Properties
     [Header("Stat Modifier Properties")]
-    [Tooltip("Stat modifier scriptable object.")]
-    [NotNullable] [SerializeField] private UI_BarProperties UI_BarProperty;
+    [Header("UI Bar Properties")]
+    [Tooltip("Image sprite.")]
+    [SerializeField] Sprite imageSprite = null;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
+    [Tooltip("Slowly fill the UI bar.")]
+    [SerializeField] bool smoothFillBar = false;
+    [Tooltip("Fill speed of the UI bar.")]
+    [ConditionalHide("SmoothFillBar", true)] [SerializeField] float fillSpeed = 0;
+    [Tooltip("Set the start fill amount.")]
+    [Range(0, 1)] [SerializeField] float startFillPercent = 0.5f;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
+    [Tooltip("Fill origion from the center.")]
+    [SerializeField] bool fillFromCenter = false;
+    [Tooltip("Flip the fill direction.")]
+    [ConditionalHide("fillFromCenter", true)] [SerializeField] bool flipFillDirection = false;
+    [Tooltip("Have a custom radial UI amount")]
+    [ConditionalEnumHide("fillType", (int)FillMethod.Radial360)] [SerializeField] bool customRadialUI = false;
+    [Tooltip("Set the custom radial amount for the UI.")]
+    [ConditionalHide("customRadialUI", true)] [SerializeField] [Range(0, 360)] int customRadial = 360;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
+    [Tooltip("Vertical fill bar or horizontal fill bar.")]
+    [SerializeField] FillMethod fillType = FillMethod.Horizontal;
+    [Tooltip("Fill direction of the UI image.")]
+    [ShowIf("fillType", (int)FillMethod.Vertical)] [SerializeField] V_FillOrigin verticalFillOrigin = V_FillOrigin.Bottom;
+    [Tooltip("Fill direction of the UI image.")]
+    [ShowIf("fillType", (int)FillMethod.Horizontal)] [SerializeField] H_FillOrigin horizontalFillOrigin = H_FillOrigin.Left;
+    [Tooltip("Fill direction of the UI image.")]
+    [ShowIf("fillType", (int)FillMethod.Radial360)] [SerializeField] R_FillOrigin radialFillOrigin = R_FillOrigin.Bottom;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
+    [Tooltip("Allow for over fill.")]
+    [SerializeField] bool canOverFill = false;
+    [ShowIf("canOverFill", true)] [SerializeField] Color overFillColor = Color.blue;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
+    [Tooltip("Range for positive color on UI bar.")]
+    [SerializeField] [MinMaxRange(0, 1)] Vector2 positiveRange = new Vector2(0.75f, 1f);
+    [Tooltip("Color of UI bar when high.")]
+    [SerializeField] Color positiveColor = Color.green;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+
+    [Tooltip("Range for negative color on UI bar.")]
+    [SerializeField] [MinMaxRange(0, 1)] Vector2 negativeRange = new Vector2(0f, 0.25f);
+    [Tooltip("Color of UI bar when low.")]
+    [SerializeField] Color negativeColor = Color.red;
+
     [Space(10)]
     [Tooltip("List of images for UI bar.")]
     [SerializeField] private List<Image> UI_Images = new List<Image>(2);
@@ -37,101 +97,110 @@ public class UniversalUIBar : MonoBehaviour {
         // Set color gradient for UI bar
         UIBarGradient = new Gradient();
 
+        // Clamp values
+        if (fillSpeed < 0) {
+            fillSpeed = 0;
+        }
+
         // Set gradient colors
         ColorKeys = new GradientColorKey[4];
-        ColorKeys[0].color = UI_BarProperty.NegativeColor;
-        ColorKeys[0].time = UI_BarProperty.NegativeRange.x;
-        ColorKeys[1].color = UI_BarProperty.NegativeColor;
-        ColorKeys[1].time = UI_BarProperty.NegativeRange.y;
-        ColorKeys[2].color = UI_BarProperty.PositiveColor;
-        ColorKeys[2].time = UI_BarProperty.PositiveRange.x;
-        ColorKeys[3].color = UI_BarProperty.PositiveColor;
-        ColorKeys[3].time = UI_BarProperty.PositiveRange.y;
+        ColorKeys[0].color = negativeColor;
+        ColorKeys[0].time = negativeRange.x;
+        ColorKeys[1].color = negativeColor;
+        ColorKeys[1].time = negativeRange.y;
+        ColorKeys[2].color = positiveColor;
+        ColorKeys[2].time = positiveRange.x;
+        ColorKeys[3].color = positiveColor;
+        ColorKeys[3].time = positiveRange.y;
 
         // Set gradient alphas
         AlphaKeys = new GradientAlphaKey[4];
         AlphaKeys[0].alpha = 1.0f;
-        AlphaKeys[0].time = UI_BarProperty.NegativeRange.x;
+        AlphaKeys[0].time = negativeRange.x;
         AlphaKeys[1].alpha = 5.0f;
-        AlphaKeys[1].time = UI_BarProperty.NegativeRange.y;
+        AlphaKeys[1].time = negativeRange.y;
         AlphaKeys[2].alpha = 5.0f;
-        AlphaKeys[2].time = UI_BarProperty.PositiveRange.x;
+        AlphaKeys[2].time = positiveRange.x;
         AlphaKeys[3].alpha = 1.0f;
-        AlphaKeys[3].time = UI_BarProperty.PositiveRange.y;
+        AlphaKeys[3].time = positiveRange.y;
 
         UIBarGradient.SetKeys(ColorKeys, AlphaKeys);
 
         // Setup UI bar for every UI image element
         for (int i = 0; i < UI_Images.Count; i++) {
-            UI_Images[i].sprite = UI_BarProperty.ImageSprite;
+            UI_Images[i].sprite = imageSprite;
             UI_Images[i].type = Image.Type.Filled;
-            if (UI_BarProperty.FillType == UI_BarProperties.FillMethod.Radial360 && UI_BarProperty.CustomRadialUI) {
-                float RadialFill = (float)UI_BarProperty.CustomRadial / 360f;
-                CurrentFillPercent = (RadialFill * UI_BarProperty.StartFillPercent) * (360f / (float)UI_BarProperty.CustomRadial);
-                UI_Images[i].fillAmount = RadialFill * UI_BarProperty.StartFillPercent;
+            if (fillType == FillMethod.Radial360 && customRadialUI) {
+                float RadialFill = (float)customRadial / 360f;
+                CurrentFillPercent = (RadialFill * startFillPercent) * (360f / (float)customRadial);
+                UI_Images[i].fillAmount = RadialFill * startFillPercent;
 
                 RadialLimit = RadialFill;
             }
             else {
-                CurrentFillPercent = UI_BarProperty.StartFillPercent;
-                UI_Images[i].fillAmount = UI_BarProperty.StartFillPercent;
+                CurrentFillPercent = startFillPercent;
+                UI_Images[i].fillAmount = startFillPercent;
             }
 
-            switch (UI_BarProperty.FillType) {
-                case UI_BarProperties.FillMethod.Vertical:
+            switch (fillType) {
+                case FillMethod.Vertical:
                     UI_Images[i].fillMethod = Image.FillMethod.Vertical;
                     break;
-                case UI_BarProperties.FillMethod.Horizontal:
+                case FillMethod.Horizontal:
                     UI_Images[i].fillMethod = Image.FillMethod.Horizontal;
                     break;
-                case UI_BarProperties.FillMethod.Radial360:
+                case FillMethod.Radial360:
                     UI_Images[i].fillMethod = Image.FillMethod.Radial360;
                     break;
             }
 
             UI_Images[i].color = UIBarGradient.Evaluate(CurrentFillPercent);
 
-            if (UI_BarProperty.StartFillPercent > UI_BarProperty.PositiveRange.x) {
-                UI_Images[i].color = UI_BarProperty.PositiveColor;
+            if (startFillPercent > positiveRange.x) {
+                UI_Images[i].color = positiveColor;
             }
-            else if (UI_BarProperty.StartFillPercent < UI_BarProperty.NegativeRange.y) {
-                UI_Images[i].color = UI_BarProperty.NegativeColor;
+            else if (startFillPercent < negativeRange.y) {
+                UI_Images[i].color = negativeColor;
             }
 
-            if (UI_BarProperty.FillFromCenter) {
+            if (fillFromCenter) {
                 if (i % 2 == 0) {
-                    if (UI_BarProperty.FillType == UI_BarProperties.FillMethod.Radial360) {
-                        RadialFillDirection(i, UI_BarProperty.FlipFillDirection);
+                    if (fillType == FillMethod.Radial360) {
+                        RadialFillDirection(i,flipFillDirection);
                     }
                     else {
-                        BarFillDirection(i, UI_BarProperty.FlipFillDirection);
+                        BarFillDirection(i, flipFillDirection);
                     }
                 }
                 else {
-                    if (UI_BarProperty.FillType == UI_BarProperties.FillMethod.Radial360) {
-                        RadialFillDirection(i, !UI_BarProperty.FlipFillDirection);
+                    if (fillType == FillMethod.Radial360) {
+                        RadialFillDirection(i, !flipFillDirection);
                     }
                     else {
-                        BarFillDirection(i, !UI_BarProperty.FlipFillDirection);
+                        BarFillDirection(i, !flipFillDirection);
                     }
                 }
             }
             else {
-                if (UI_BarProperty.FillType == UI_BarProperties.FillMethod.Radial360) {
-                    RadialFillDirection(i, UI_BarProperty.FlipFillDirection);
+                if (fillType == FillMethod.Radial360) {
+                    RadialFillDirection(i, flipFillDirection);
                 }
                 else {
-                    BarFillDirection(i, UI_BarProperty.FlipFillDirection);
+                    BarFillDirection(i, flipFillDirection);
                 }
             }
         }
     }
 
-    // Determine the fill direction
+    /// <summary>
+    /// Determines fill direction for bar type UI
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="flip"></param>
     void BarFillDirection(int index, bool flip) {
-        if (UI_BarProperty.FillFromCenter) {
-            switch (UI_BarProperty.FillType) {
-                case UI_BarProperties.FillMethod.Vertical:
+        if (fillFromCenter) {
+            switch (fillType) {
+                case FillMethod.Vertical:
                     if (flip) {
                         UI_Images[index].fillOrigin = (int)Image.OriginVertical.Top;
                     }
@@ -139,7 +208,7 @@ public class UniversalUIBar : MonoBehaviour {
                         UI_Images[index].fillOrigin = (int)Image.OriginVertical.Bottom;
                     }
                     break;
-                case UI_BarProperties.FillMethod.Horizontal:
+                case FillMethod.Horizontal:
                     if (flip) {
                         UI_Images[index].fillOrigin = (int)Image.OriginHorizontal.Left;
                     }
@@ -150,30 +219,46 @@ public class UniversalUIBar : MonoBehaviour {
             }
         }
         else {
-            switch (UI_BarProperty.FillType) {
-                case UI_BarProperties.FillMethod.Vertical:
-                    UI_Images[index].fillOrigin = (int)UI_BarProperty.VerticalFillOrigin;
+            switch (fillType) {
+                case FillMethod.Vertical:
+                    UI_Images[index].fillOrigin = (int)verticalFillOrigin;
                     break;
-                case UI_BarProperties.FillMethod.Horizontal:
-                    UI_Images[index].fillOrigin = (int)UI_BarProperty.HorizontalFillOrigin;
+                case FillMethod.Horizontal:
+                    UI_Images[index].fillOrigin = (int)horizontalFillOrigin;
                     break;
             }
         }
     }
+    /// <summary>
+    /// Determines fill direction for radial type UI
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="flip"></param>
     void RadialFillDirection(int index, bool flip) {
         UI_Images[index].fillClockwise = flip;
-        UI_Images[index].fillOrigin = (int)UI_BarProperty.RadialFillOrigin;
+        UI_Images[index].fillOrigin = (int)radialFillOrigin;
     }
 
-    // Getter Setter for current fill
+    /// <summary>
+    /// Getter for fill capacity
+    /// </summary>
+    /// <returns></returns>
     protected float GetCurrentFill() {
         return CurrentFillPercent;
     }
+    /// <summary>
+    /// Setter for fill capacity
+    /// </summary>
+    /// <param name="SetFill"></param>
     protected void SetCurrentFill(float SetFill) {
         CurrentFillPercent = SetFill;
     }
 
-    // Main method for the UI bar
+    /// <summary>
+    /// Main fill function and logic
+    /// </summary>
+    /// <param name="FillAmount"></param>
+    /// <returns></returns>
     protected IEnumerator Fill_UI_Bar(float FillAmount) {
         float Counter = 0;
 
@@ -182,13 +267,13 @@ public class UniversalUIBar : MonoBehaviour {
 
         
 
-        if (UI_BarProperty.FillType == UI_BarProperties.FillMethod.Radial360) {
-            if (CurrentFillPercent >= 1 && !UI_BarProperty.CanOverFill) {
+        if (fillType == FillMethod.Radial360) {
+            if (CurrentFillPercent >= 1 && !canOverFill) {
                 CurrentFillPercent = 1;
             }
         }
         else {
-            if (CurrentFillPercent >= 1 && !UI_BarProperty.CanOverFill) {
+            if (CurrentFillPercent >= 1 && !canOverFill) {
                 CurrentFillPercent = 1;
             }
         }
@@ -196,13 +281,13 @@ public class UniversalUIBar : MonoBehaviour {
             CurrentFillPercent = 0;
         }
 
-        if (UI_BarProperty.SmoothFillBar) {
-            while (Counter < UI_BarProperty.FillSpeed) {
+        if (smoothFillBar) {
+            while (Counter < fillSpeed) {
                 Counter += Time.deltaTime;
                 foreach (Image i in UI_Images) {
                     float NextFill;
-                    if (UI_BarProperty.FillType == UI_BarProperties.FillMethod.Radial360) {
-                        NextFill = CurrentFillPercent / (360f / (float)UI_BarProperty.CustomRadial);
+                    if (fillType == FillMethod.Radial360) {
+                        NextFill = CurrentFillPercent / (360f / (float)customRadial);
                     }
                     else {
                         NextFill = CurrentFillPercent;
@@ -210,10 +295,10 @@ public class UniversalUIBar : MonoBehaviour {
 
                     i.fillAmount = Mathf.Lerp(i.fillAmount, NextFill, Time.deltaTime);
 
-                    if (UI_BarProperty.CanOverFill && CurrentFillPercent > UI_BarProperty.PositiveRange.y) {
-                        i.color = UI_BarProperty.OverFillColor;
+                    if (canOverFill && CurrentFillPercent > positiveRange.y) {
+                        i.color = overFillColor;
                     }
-                    else if (CurrentFillPercent <= UI_BarProperty.PositiveRange.y) {
+                    else if (CurrentFillPercent <= positiveRange.y) {
                         i.color = UIBarGradient.Evaluate(CurrentFillPercent);
                     }
                 }
@@ -224,8 +309,8 @@ public class UniversalUIBar : MonoBehaviour {
             foreach (Image i in UI_Images) {
                 i.fillAmount = CurrentFillPercent;
 
-                if (CurrentFillPercent > 1 && UI_BarProperty.CanOverFill) {
-                    i.color = UI_BarProperty.OverFillColor;
+                if (CurrentFillPercent > 1 && canOverFill) {
+                    i.color = overFillColor;
                 }
                 else {
                     i.color = UIBarGradient.Evaluate(CurrentFillPercent);

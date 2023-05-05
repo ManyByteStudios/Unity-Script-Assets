@@ -5,10 +5,7 @@ namespace ByteAttributes.Editor {
 
     /// <summary>
     /// This script contains the logic for the "Absolute Value" attribute.
-    /// The script will check for the type of numerical variable and using
-    /// Mathf.abs, it will force the value to be positive.
     /// </sumary>
-
     [CustomPropertyDrawer(typeof(AbsoluteValueAttribute))]
     public class AbsoluteValuePropertyDrawer : PropertyDrawer {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {

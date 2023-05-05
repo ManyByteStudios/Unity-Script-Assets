@@ -1,5 +1,6 @@
 using UnityEngine;
 using ByteAttributes;
+using System.Collections.Generic;
 
 /// <summary>
 /// This script manipulates the forces applied on any
@@ -13,9 +14,54 @@ using ByteAttributes;
 [RequireComponent(typeof(SphereCollider))]
 public class GravityManipulator : MonoBehaviour {
     #region Gravity Manipulator Values
+    public enum Gravity { Directional, Spherical }
+    public enum ForceAxis { X, Y, Z }
+
     [Header("Gravity Manipulation Properties")]
-    [Tooltip("Gravity manipulator scriptable object.")]
-    [NotNullable] [SerializeField] private GravityProperties gravProperty = null;
+    [Tooltip("Plantary gravity (Spherical), Specific direction (Directional)")]
+    [SerializeField] Gravity gravityType = Gravity.Directional;
+    [Tooltip("Gravity strength.")]
+    [SerializeField] float gravityForce = 9.81f;
+    [Tooltip("The speed of the object rotatating upwards relative to gravity direction.")]
+    [SerializeField] float rotationSpeed = 50f;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+    [Tooltip("Limited Gravity Range.")]
+    [SerializeField] bool limitedGravityArea = true;
+    [Space(10)]
+    [Tooltip("Direction of gravity.")]
+    [SerializeField] [ConditionalEnumHide("gravityType", (int)Gravity.Directional)] GravityAxis gravityAxis = null;
+    [Tooltip("Area for gravity.")]
+    [SerializeField] [ConditionalHide("limitedGravityArea", true)] DirectionalGravity directionalGravity = null;
+    [Tooltip("Area for gravity.")]
+    [SerializeField] [ConditionalHide("limitedGravityArea", true)] SphericalGravity sphericalGravity = null;
+    [Space(5)]
+    [LineDivider(4, color: LineColors.Black)]
+    [Tooltip("Gravity manipulator affects only listed objects with selective tags.")]
+    [SerializeField] bool selectiveObjects = false;
+    [Tooltip("All tags that will be affect by the gravity manipulator.")]
+    [SerializeField] List<SelectiveTags> objectTags = null;
+
+    [System.Serializable]
+    public class GravityAxis {
+        [EnumFlags] public ForceAxis axis = ForceAxis.X;
+    }
+
+    [System.Serializable]
+    public class DirectionalGravity {
+        [ConditionalEnumHideAttribute("gravityType", (int)Gravity.Directional)] public Vector3 gravitySize = new Vector3(1, 1, 1);
+    }
+
+    [System.Serializable]
+    public class SphericalGravity
+    {
+        [ConditionalEnumHideAttribute("gravityType", (int)Gravity.Spherical)] public float gravityRadius = 1;
+    }
+
+    [System.Serializable]
+    public class SelectiveTags {
+        [Tag] public string objectTag = null;
+    }
 
     float CurrentGravity = 0;
     GravityBody[] tempBodies;
@@ -31,7 +77,7 @@ public class GravityManipulator : MonoBehaviour {
         SphereCollider sphereCollider = GetComponent<SphereCollider>();
         sphereCollider.isTrigger = true;
 
-        if (gravProperty.GravityType == GravityProperties.Gravity.Directional) {
+        if (gravityType == Gravity.Directional) {
             boxCollider.enabled = true;
             sphereCollider.enabled = false;
         }
@@ -40,57 +86,40 @@ public class GravityManipulator : MonoBehaviour {
             sphereCollider.enabled = true;
         }
 
-        boxCollider.size = gravProperty.DirectionalGrav.gravitySize;
-        sphereCollider.radius = gravProperty.SphericalGrav.gravityRadius;
+        boxCollider.size = directionalGravity.gravitySize;
+        sphereCollider.radius = sphericalGravity.gravityRadius;
 
-        if (gravProperty.DirectionalGrav.gravitySize.x < 0) {
-            gravProperty.DirectionalGrav.gravitySize.x = 0;
+        if (directionalGravity.gravitySize.x < 0) {
+            directionalGravity.gravitySize.x = 0;
         }
-        if (gravProperty.DirectionalGrav.gravitySize.y < 0) {
-            gravProperty.DirectionalGrav.gravitySize.y = 0;
+        if (directionalGravity.gravitySize.y < 0) {
+            directionalGravity.gravitySize.y = 0;
         }
-        if (gravProperty.DirectionalGrav.gravitySize.z < 0) {
-            gravProperty.DirectionalGrav.gravitySize.z = 0;
+        if (directionalGravity.gravitySize.z < 0) {
+            directionalGravity.gravitySize.z = 0;
         }
-        if (gravProperty.SphericalGrav.gravityRadius < 0) {
-            gravProperty.SphericalGrav.gravityRadius = 0;
+        if (sphericalGravity.gravityRadius < 0) {
+            sphericalGravity.gravityRadius = 0;
         }
     }
 
     // Start is called before the first frame update
     protected virtual void Start() {
-        CurrentGravity = gravProperty.GravityForce;
+        CurrentGravity = gravityForce;
     }
 
-    // Late Update is called at the end of each frame
-    protected virtual void LateUpdate() {
-        if (!gravProperty.LimitedGravityArea) {
-            // Finds every object with "GravityBody"
-            tempBodies = FindObjectsOfType<GravityBody>();
-            foreach (GravityBody i in tempBodies) {
-                if (gravProperty.SelectiveObjects) {
-                    for (int a = 0; a < gravProperty.ObjectTags.Count; a++) {
-                        if (i.gameObject.CompareTag(gravProperty.ObjectTags[a].objectTag)) {
-                            i.AddManipulator(this);
-                        }
-                    }
-                }
-                else {
-                    i.AddManipulator(this);
-                }
-            }
-        }
-    }
-
-    // Simple use for those who don't want to override
+    /// <summary>
+    /// Update all Gravity Body scripts with this manipulator.
+    /// This method should be placed in FixedUpdate()
+    /// </summary>
     protected void GravityUpdate() {
-        if (!gravProperty.LimitedGravityArea) {
+        if (!limitedGravityArea) {
             // Finds every object with "GravityBody"
             tempBodies = FindObjectsOfType<GravityBody>();
             foreach (GravityBody i in tempBodies) {
-                if (gravProperty.SelectiveObjects) {
-                    for (int a = 0; a < gravProperty.ObjectTags.Count; a++) {
-                        if (i.gameObject.CompareTag(gravProperty.ObjectTags[a].objectTag)) {
+                if (selectiveObjects) {
+                    for (int a = 0; a < objectTags.Count; a++) {
+                        if (i.gameObject.CompareTag(objectTags[a].objectTag)) {
                             i.AddManipulator(this);
                         }
                     }
@@ -105,26 +134,24 @@ public class GravityManipulator : MonoBehaviour {
     /// <summary>
     /// Applies the gravity force on objects with the GravBody script.
     /// </summary>
-    /// <param name="ObjectBody"></param>
-    /// <param name="ObjectTransform"></param>
     public void ApplyGravity(Rigidbody ObjectBody, Transform ObjectTransform) {
-        switch (gravProperty.GravityType) {
-            case GravityProperties.Gravity.Directional:
+        switch (gravityType) {
+            case Gravity.Directional:
                 // Apply gravitational force by axis
-                if (gravProperty.GravAxis.axis.HasFlag(GravityProperties.ForceAxis.X)) {
+                if (gravityAxis.axis.HasFlag(ForceAxis.X)) {
                     ObjectBody.AddForce(ObjectTransform.right * -CurrentGravity);
                 }
-                if (gravProperty.GravAxis.axis.HasFlag(GravityProperties.ForceAxis.Y)) {
+                if (gravityAxis.axis.HasFlag(ForceAxis.Y)) {
                     ObjectBody.AddForce(ObjectTransform.up * -CurrentGravity);
                 }
-                if (gravProperty.GravAxis.axis.HasFlag(GravityProperties.ForceAxis.Z)) {
+                if (gravityAxis.axis.HasFlag(ForceAxis.Z)) {
                     ObjectBody.AddForce(ObjectTransform.forward * -CurrentGravity);
                 }
 
                 // Rotate object to align with the gravity source
-                ObjectTransform.rotation = Quaternion.Slerp(ObjectTransform.rotation, transform.localRotation, gravProperty.RotationSpeed * Time.deltaTime);
+                ObjectTransform.rotation = Quaternion.Slerp(ObjectTransform.rotation, transform.localRotation, rotationSpeed * Time.deltaTime);
                 break;
-            case GravityProperties.Gravity.Spherical:
+            case Gravity.Spherical:
                 // Determine the direction of the gravity and object "up" direction
                 GravityDirection = (ObjectTransform.localPosition - transform.localPosition).normalized;
                 ObjectUp = ObjectTransform.up;
@@ -134,33 +161,59 @@ public class GravityManipulator : MonoBehaviour {
 
                 // Rotate the object based on the position realative to the gravity source
                 ObjectRotation = Quaternion.FromToRotation(ObjectUp, GravityDirection) * ObjectTransform.rotation;
-                ObjectTransform.rotation = Quaternion.Slerp(ObjectTransform.rotation, ObjectRotation, gravProperty.RotationSpeed * Time.deltaTime);
+                ObjectTransform.rotation = Quaternion.Slerp(ObjectTransform.rotation, ObjectRotation, rotationSpeed * Time.deltaTime);
                 break;
         }
     }
 
     #region Gravity Manipulator Adjustments
+    /// <summary>
+    /// Change the gravitational force
+    /// </summary>
     protected void ChangeGravityForce(float NewGravForce = 0) {
         CurrentGravity = NewGravForce;
     }
+    /// <summary>
+    /// Manipulate the gravitational force.
+    /// </summary>
     protected void AdjustGravityForce(float GravAdjustment = 0) {
         CurrentGravity += GravAdjustment;
     }
+    /// <summary>
+    /// Change the dimensions of the area which the gravity is manipulated.
+    /// </summary>
     protected void ChangeGravityRangeBox(Vector3 BoxSize) {
         BoxCollider boxCollider = GetComponent<BoxCollider>();
-        boxCollider.size = gravProperty.DirectionalGrav.gravitySize;
+        boxCollider.size = directionalGravity.gravitySize;
     }
+    /// <summary>
+    /// Change the dimensions of the area which the gravity is manipulated.
+    /// </summary>
+    protected Vector3 GetGravityRangeBox() {
+        BoxCollider boxCollider = GetComponent<BoxCollider>();
+        return boxCollider.size;
+    }
+    /// <summary>
+    /// Change the radius of the area which the gravity is manipulated.
+    /// </summary>
     protected void ChangeGravityRadius(float SphereRadius) {
         SphereCollider sphereCollider = GetComponent<SphereCollider>();
-        sphereCollider.radius = gravProperty.SphericalGrav.gravityRadius;
+        sphereCollider.radius = SphereRadius;
+    }
+    /// <summary>
+    /// Get the radius of the manipulator's range.
+    /// </summary>
+    protected float GetGravityRadius() {
+        SphereCollider sphereCollider = GetComponent<SphereCollider>();
+        return sphereCollider.radius;
     }
     #endregion
 
     #region Gravity manipulator Collision Triggers
     protected virtual void OnTriggerEnter(Collider obj) {
-        if (gravProperty.SelectiveObjects) {
-            for (int a = 0; a < gravProperty.ObjectTags.Count; a++) {
-                if (obj.gameObject.CompareTag(gravProperty.ObjectTags[a].objectTag)) {
+        if (selectiveObjects) {
+            for (int a = 0; a < objectTags.Count; a++) {
+                if (obj.gameObject.CompareTag(objectTags[a].objectTag)) {
                     obj.GetComponent<GravityBody>().AddManipulator(this);
                 }
             }

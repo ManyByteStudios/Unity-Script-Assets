@@ -5,6 +5,10 @@ to have multiple objects with the same script or use inheritance to have multipl
 versions of the script. To inherit the scrip simply replace "MonoBehaviour" with
 this script's class name, "GravityManipulator" or "GravityBody".
 
+This set of scripts also come with "GravityManipulator2D" or "GravityBody2D" for a
+2D game enviorment. It both fucnctions the same and has the same functions with "2D"
+at the end.
+
 The Gravity Body script should be placed on the object that you wish to be affected
 by gravity.
 

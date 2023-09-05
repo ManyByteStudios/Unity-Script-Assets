@@ -14,8 +14,8 @@ using System.Collections.Generic;
 [RequireComponent(typeof(CircleCollider2D))]
 public class GravityManipulator2D : MonoBehaviour {
     #region Gravity Manipulator Values
-    protected enum Gravity { Directional, Spherical }
-    protected enum ForceAxis { X, Y }
+    private enum Gravity { Directional, Spherical }
+    private enum ForceAxis { X, Y }
 
     [Header("Gravity Manipulation Properties")]
     [Tooltip("Plantary gravity (Spherical), Specific direction (Directional)")]

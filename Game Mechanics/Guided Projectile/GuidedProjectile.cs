@@ -10,8 +10,8 @@ using ByteAttributes;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody))]
 public class GuidedProjectile : MonoBehaviour {
-    protected enum GuidanceSystem { Controlled, Homming, Laser }
-    protected enum ForwardAxis { X_Axis, Y_Axis, Z_Axis }
+    private enum GuidanceSystem { Controlled, Homming, Laser }
+    private enum ForwardAxis { X_Axis, Y_Axis, Z_Axis }
 
     #region Variables
     [Header("Guided Projectile Properties")]

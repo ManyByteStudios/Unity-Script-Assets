@@ -7,8 +7,8 @@ using ByteAttributes;
 /// </summary>
 public class UniversalTimer : MonoBehaviour {
     #region Universal Timer Variables
-    protected enum TimerFunction { CountUp, CountDown}
-    protected enum TimerTextOutput { Minutes, Seconds}
+    private enum TimerFunction { CountUp, CountDown}
+    private enum TimerTextOutput { Minutes, Seconds}
 
     [Header("Timer Properties")]
     [Tooltip("Timer pause status.")]

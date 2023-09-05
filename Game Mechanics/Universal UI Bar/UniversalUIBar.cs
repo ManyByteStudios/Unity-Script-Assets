@@ -16,10 +16,10 @@ using ByteAttributes;
 [DisallowMultipleComponent]
 public class UniversalUIBar : MonoBehaviour {
     #region Universal UI Bar Enums
-    protected enum FillMethod { Horizontal, Vertical, Radial360 }
-    protected enum H_FillOrigin { Right, Left }
-    protected enum V_FillOrigin { Bottom, Top }
-    protected enum R_FillOrigin { Bottom, Right, Top, Left }
+    private enum FillMethod { Horizontal, Vertical, Radial360 }
+    private enum H_FillOrigin { Right, Left }
+    private enum V_FillOrigin { Bottom, Top }
+    private enum R_FillOrigin { Bottom, Right, Top, Left }
     #endregion
 
     #region Universal UI Bar Properties

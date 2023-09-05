@@ -12,8 +12,8 @@ using ByteAttributes;
 
 public class StatModifier : MonoBehaviour {
     #region Stat Modifier Upgrade Properties
-    protected enum ModifyType { Additive, Percentage };
-    protected enum StatType { Buff, Debuff };
+    private enum ModifyType { Additive, Percentage };
+    private enum StatType { Buff, Debuff };
 
     [Header("Stat Modifier Properties")]
     [Tooltip("Name of the stat modifier.")]

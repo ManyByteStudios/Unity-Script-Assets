@@ -6,7 +6,7 @@ using ByteAttributes;
 /// change in timer function, reset, pause, and unpause and text output.
 /// </summary>
 public class UniversalTimer : MonoBehaviour {
-    #region
+    #region Universal Timer Variables
     protected enum TimerFunction { CountUp, CountDown}
     protected enum TimerTextOutput { Minutes, Seconds}
 
@@ -37,7 +37,7 @@ public class UniversalTimer : MonoBehaviour {
     /// <summary>
     /// Core timer function.
     /// </summary>
-    protected void RunTimer() {
+    public void RunTimer() {
         if (!timerPaused) {
             switch (function) {
                 case TimerFunction.CountUp:
@@ -63,7 +63,7 @@ public class UniversalTimer : MonoBehaviour {
     /// <summary>
     /// Pause and Unpause timer.
     /// </summary>
-    protected void PauseUnpauseTimer() {
+    public void PauseUnpauseTimer() {
         timerPaused = !timerPaused;
     }
 
@@ -71,7 +71,7 @@ public class UniversalTimer : MonoBehaviour {
     /// Reset timer based on the current function.
     /// </summary>
     /// <param name="TotalTime"></param>
-    protected void ResetTimer(int TotalTime = 0) {
+    public void ResetTimer(int TotalTime = 0) {
         timerPaused = true;
 
         switch (function) {
@@ -99,7 +99,7 @@ public class UniversalTimer : MonoBehaviour {
     /// Get the text for the timer.
     /// </summary>
     /// <returns></returns>
-    protected string TimerText() {
+    public string TimerText() {
         string ReturnText = null;
         switch (outputInclusion) {
             case TimerTextOutput.Minutes:
@@ -117,7 +117,7 @@ public class UniversalTimer : MonoBehaviour {
     /// Swap timer function.
     /// </summary>
     /// <param name="TotalTime"></param>
-    protected void SwitchTimerFunction(int TotalTime = 0) {
+    public void SwitchTimerFunction(int TotalTime = 0) {
         timerPaused = true;
 
         switch (function) {

@@ -24,7 +24,7 @@ public class GachaLoot : MonoBehaviour {
     /// </summary>
     /// <param name="NumberOfRewards"></param>
     /// <returns></returns>
-    protected GameObject[] GenerateLoot(int NumberOfRewards) {
+    public GameObject[] GenerateLoot(int NumberOfRewards) {
         int MaxLootPool = 1;
         GameObject[] GeneratedLoot = null;
 

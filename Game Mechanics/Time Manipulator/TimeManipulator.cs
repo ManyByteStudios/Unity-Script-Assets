@@ -45,7 +45,7 @@ public class TimeManipulator : DontDestroy {
     /// Instantly set new time scale speed.
     /// </summary>
     /// <param name="NewTimeScale"></param>
-    protected void SetTimeScale(float NewTimeScale) {
+    public void SetTimeScale(float NewTimeScale) {
         currentTimeScale = NewTimeScale;
         if (currentTimeScale < 0) {
             currentTimeScale = 0;
@@ -62,14 +62,14 @@ public class TimeManipulator : DontDestroy {
     /// Get the current time scale speed.
     /// </summary>
     /// <returns></returns>
-    protected float GetTimeScale() {
+    public float GetTimeScale() {
         return currentTimeScale;
     }
 
     /// <summary>
     /// Reset the time scale speed to 1, default speed.
     /// </summary>
-    protected void ResetTimeScale() {
+    public void ResetTimeScale() {
         currentTimeScale = 1;
         Time.timeScale = currentTimeScale;
     }
@@ -80,7 +80,7 @@ public class TimeManipulator : DontDestroy {
     /// <param name="SmoothSpeed"></param>
     /// <param name="NewTimeScale"></param>
     /// <returns></returns>
-    protected IEnumerator LerpTimeScale(float SmoothSpeed, float NewTimeScale) {
+    public IEnumerator LerpTimeScale(float SmoothSpeed, float NewTimeScale) {
         float Elapse = 0;
         float TempTimeScale = currentTimeScale;
 

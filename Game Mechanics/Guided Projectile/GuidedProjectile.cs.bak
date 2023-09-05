@@ -10,8 +10,8 @@ using ByteAttributes;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody))]
 public class GuidedProjectile : MonoBehaviour {
-    protected enum GuidanceSystem { Controlled, Homming, Laser }
-    protected enum ForwardAxis { X_Axis, Y_Axis, Z_Axis }
+    public enum GuidanceSystem { Controlled, Homming, Laser }
+    public enum ForwardAxis { X_Axis, Y_Axis, Z_Axis }
 
     #region Variables
     [Header("Guided Projectile Properties")]
@@ -63,7 +63,7 @@ public class GuidedProjectile : MonoBehaviour {
     /// This must be called in the fixed update method and is the core function of the script.
     /// </summary>
     /// <param name="InputVector"></param>
-    public void ControlProjectile(Vector2 InputVector = default(Vector2)) {
+    protected void ControlProjectile(Vector2 InputVector = default(Vector2)) {
         IsTracking = isTracking;
         if (setInitalVelocity) {
             InitalVelocity = projectileVelocity;
@@ -130,47 +130,47 @@ public class GuidedProjectile : MonoBehaviour {
     /// Change the input smoothing.
     /// </summary>
     /// <param name="NewInputSmoothing"></param>
-    public void SetInputSmoothing(float NewInputSmoothing) {
+    protected void SetInputSmoothing(float NewInputSmoothing) {
         inputSmoothing = NewInputSmoothing;
     }
     /// <summary>
     /// Get the input smoothing value.
     /// </summary>
     /// <returns></returns>
-    public float GetInputSmoothing() {
+    protected float GetInputSmoothing() {
         return inputSmoothing;
     }
     /// <summary>
     /// Change the input sensitivity.
     /// </summary>
-    public void SetInputSensitivity(float NewInputSensitivity) {
+    protected void SetInputSensitivity(float NewInputSensitivity) {
         inputSensitivity = NewInputSensitivity;
     }
     /// <summary>
     /// Get the input sensitivity value.
     /// </summary>
     /// <returns></returns>
-    public float GetInputSensitivity() {
+    protected float GetInputSensitivity() {
         return inputSensitivity;
     }
     /// <summary>
     /// Change the turn speed.
     /// </summary>
-    public void SetTurnSpeed(float NewTurnSpeed) {
+    protected void SetTurnSpeed(float NewTurnSpeed) {
         turnRate = NewTurnSpeed;
     }
     /// <summary>
     /// Get the turn rate for the projectile.
     /// </summary>
     /// <returns></returns>
-    public float GetTurnSpeed() {
+    protected float GetTurnSpeed() {
         return turnRate;
     }
     /// <summary>
     /// Change the projectiles velocity.
     /// </summary>
     /// <param name="VelocityChange"></param>
-    public void ChangeInitalVelocity(float VelocityChange) {
+    protected void ChangeInitalVelocity(float VelocityChange) {
         float Speed = ProjectileBody.velocity.magnitude;
         Speed += VelocityChange;
 
@@ -190,7 +190,7 @@ public class GuidedProjectile : MonoBehaviour {
     /// Get the projectile's speed.
     /// </summary>
     /// <returns></returns>
-    public float GetVelocity() {
+    protected float GetVelocity() {
         return ProjectileBody.velocity.magnitude;
     }
     
@@ -200,14 +200,14 @@ public class GuidedProjectile : MonoBehaviour {
     /// Set target for projectile
     /// </summary>
     /// <param name="NewTarget"></param>
-    public void SetTarget(GameObject NewTarget = null) {
+    protected void SetTarget(GameObject NewTarget = null) {
         TargetObj = NewTarget;
     }
     /// <summary>
     /// Returns to targeted object
     /// </summary>
     /// <returns></returns>
-    public GameObject GetTarget() {
+    protected GameObject GetTarget() {
         return TargetObj;
     }
 
@@ -215,21 +215,21 @@ public class GuidedProjectile : MonoBehaviour {
     /// Set position to target for projectile
     /// </summary>
     /// <param name="TargetPos"></param>
-    public void SetTargetPosition(Vector3 TargetPos) {
+    protected void SetTargetPosition(Vector3 TargetPos) {
         LaserTarget = TargetPos;
     }
     /// <summary>
     /// Returns a vector 3 position for laser targeting
     /// </summary>
     /// <returns></returns>
-    public Vector3 GetTargetedPosition() {
+    protected Vector3 GetTargetedPosition() {
         return LaserTarget;
     }
 
     /// <summary>
     /// Enable or disable the homing function.
     /// </summary>
-    public void EnableTracking() {
+    protected void EnableTracking() {
         IsTracking = !IsTracking;
     }
     #endregion

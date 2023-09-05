@@ -16,10 +16,10 @@ using ByteAttributes;
 [DisallowMultipleComponent]
 public class UniversalUIBar : MonoBehaviour {
     #region Universal UI Bar Enums
-    public enum FillMethod { Horizontal, Vertical, Radial360 }
-    public enum H_FillOrigin { Right, Left }
-    public enum V_FillOrigin { Bottom, Top }
-    public enum R_FillOrigin { Bottom, Right, Top, Left }
+    protected enum FillMethod { Horizontal, Vertical, Radial360 }
+    protected enum H_FillOrigin { Right, Left }
+    protected enum V_FillOrigin { Bottom, Top }
+    protected enum R_FillOrigin { Bottom, Right, Top, Left }
     #endregion
 
     #region Universal UI Bar Properties
@@ -243,14 +243,14 @@ public class UniversalUIBar : MonoBehaviour {
     /// Getter for fill capacity
     /// </summary>
     /// <returns></returns>
-    protected float GetCurrentFill() {
+    public float GetCurrentFill() {
         return CurrentFillPercent;
     }
     /// <summary>
     /// Setter for fill capacity
     /// </summary>
     /// <param name="SetFill"></param>
-    protected void SetCurrentFill(float SetFill) {
+    public void SetCurrentFill(float SetFill) {
         CurrentFillPercent = SetFill;
     }
 
@@ -259,7 +259,7 @@ public class UniversalUIBar : MonoBehaviour {
     /// </summary>
     /// <param name="FillAmount"></param>
     /// <returns></returns>
-    protected IEnumerator Fill_UI_Bar(float FillAmount) {
+    public IEnumerator Fill_UI_Bar(float FillAmount) {
         float Counter = 0;
 
         // Checks to see the fill are within boundries

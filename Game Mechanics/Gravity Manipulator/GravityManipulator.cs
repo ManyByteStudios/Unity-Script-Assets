@@ -14,8 +14,8 @@ using System.Collections.Generic;
 [RequireComponent(typeof(SphereCollider))]
 public class GravityManipulator : MonoBehaviour {
     #region Gravity Manipulator Values
-    public enum Gravity { Directional, Spherical }
-    public enum ForceAxis { X, Y, Z }
+    protected enum Gravity { Directional, Spherical }
+    protected enum ForceAxis { X, Y, Z }
 
     [Header("Gravity Manipulation Properties")]
     [Tooltip("Plantary gravity (Spherical), Specific direction (Directional)")]
@@ -104,7 +104,7 @@ public class GravityManipulator : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    protected virtual void Start() {
+    public virtual void Start() {
         CurrentGravity = gravityForce;
     }
 
@@ -112,7 +112,7 @@ public class GravityManipulator : MonoBehaviour {
     /// Update all Gravity Body scripts with this manipulator.
     /// This method should be placed in FixedUpdate()
     /// </summary>
-    protected void GravityUpdate() {
+    public void GravityUpdate() {
         if (!limitedGravityArea) {
             // Finds every object with "GravityBody"
             tempBodies = FindObjectsOfType<GravityBody>();
@@ -170,47 +170,47 @@ public class GravityManipulator : MonoBehaviour {
     /// <summary>
     /// Change the gravitational force
     /// </summary>
-    protected void ChangeGravityForce(float NewGravForce = 0) {
+    public void ChangeGravityForce(float NewGravForce = 0) {
         CurrentGravity = NewGravForce;
     }
     /// <summary>
     /// Manipulate the gravitational force.
     /// </summary>
-    protected void AdjustGravityForce(float GravAdjustment = 0) {
+    public void AdjustGravityForce(float GravAdjustment = 0) {
         CurrentGravity += GravAdjustment;
     }
     /// <summary>
     /// Change the dimensions of the area which the gravity is manipulated.
     /// </summary>
-    protected void ChangeGravityRangeBox(Vector3 BoxSize) {
+    public void ChangeGravityRangeBox(Vector3 BoxSize) {
         BoxCollider boxCollider = GetComponent<BoxCollider>();
         boxCollider.size = directionalGravity.gravitySize;
     }
     /// <summary>
     /// Change the dimensions of the area which the gravity is manipulated.
     /// </summary>
-    protected Vector3 GetGravityRangeBox() {
+    public Vector3 GetGravityRangeBox() {
         BoxCollider boxCollider = GetComponent<BoxCollider>();
         return boxCollider.size;
     }
     /// <summary>
     /// Change the radius of the area which the gravity is manipulated.
     /// </summary>
-    protected void ChangeGravityRadius(float SphereRadius) {
+    public void ChangeGravityRadius(float SphereRadius) {
         SphereCollider sphereCollider = GetComponent<SphereCollider>();
         sphereCollider.radius = SphereRadius;
     }
     /// <summary>
     /// Get the radius of the manipulator's range.
     /// </summary>
-    protected float GetGravityRadius() {
+    public float GetGravityRadius() {
         SphereCollider sphereCollider = GetComponent<SphereCollider>();
         return sphereCollider.radius;
     }
     #endregion
 
     #region Gravity manipulator Collision Triggers
-    protected virtual void OnTriggerEnter(Collider obj) {
+    public virtual void OnTriggerEnter(Collider obj) {
         if (selectiveObjects) {
             for (int a = 0; a < objectTags.Count; a++) {
                 if (obj.gameObject.CompareTag(objectTags[a].objectTag)) {
@@ -222,7 +222,7 @@ public class GravityManipulator : MonoBehaviour {
             obj.GetComponent<GravityBody>().AddManipulator(this);
         }
     }
-    protected virtual void OnTriggerExit(Collider obj) {
+    public virtual void OnTriggerExit(Collider obj) {
         obj.GetComponent<GravityBody>().RemoveManipulator(this);
     }
     #endregion

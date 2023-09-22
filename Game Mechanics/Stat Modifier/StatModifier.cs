@@ -12,8 +12,8 @@ using ByteAttributes;
 
 public class StatModifier : MonoBehaviour {
     #region Stat Modifier Upgrade Properties
-    private enum ModifyType { Additive, Percentage };
-    private enum StatType { Buff, Debuff };
+    public enum ModifyType { Additive, Percentage };
+    public enum StatType { Buff, Debuff };
 
     [Header("Stat Modifier Properties")]
     [Tooltip("Name of the stat modifier.")]
@@ -33,7 +33,7 @@ public class StatModifier : MonoBehaviour {
         [Tooltip("Stat buff or debuff.")]
         public StatType statType = StatType.Buff;
         [Tooltip("Type of stat modifier.")]
-        [SerializeField] public ModifyType modifierType = ModifyType.Additive;
+        public ModifyType modifierType = ModifyType.Additive;
         [Tooltip("Stat value at level 0.")]
         [AbsoluteValue] public float baseStatValue = 0;
         [Tooltip("How much the stat will increase by.")]

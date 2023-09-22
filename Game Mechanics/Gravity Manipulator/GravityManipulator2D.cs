@@ -15,7 +15,7 @@ using System.Collections.Generic;
 public class GravityManipulator2D : MonoBehaviour {
     #region Gravity Manipulator Values
     private enum Gravity { Directional, Spherical }
-    private enum ForceAxis { X, Y }
+    public enum ForceAxis { X, Y }
 
     [Header("Gravity Manipulation Properties")]
     [Tooltip("Plantary gravity (Spherical), Specific direction (Directional)")]

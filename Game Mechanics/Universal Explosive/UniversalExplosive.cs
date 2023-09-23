@@ -29,6 +29,8 @@ public class UniversalExplosive : MonoBehaviour {
     [SerializeField][MinValue(0)] float explosiveForce = 1f;
     [Tooltip("Explosion radius effecting rigidbodies within range.")]
     [SerializeField][MinValue(0)] float explosiveRange = 1f;
+    [Tooltip("Explosion audio.")]
+    [SerializeField][NotNullable] AudioSource explosionAudio = null;
     [Tooltip("Explosion particle effects.")]
     [SerializeField][NotNullable] ParticleSystem explosionEffects = null;
     [Space(5)][LineDivider(2, LineColors.Black)]
@@ -39,6 +41,8 @@ public class UniversalExplosive : MonoBehaviour {
     [Space(5)][LineDivider(2, LineColors.Black)]
     [Tooltip("Explosive objects creates more explosive object around it.")]
     [SerializeField] bool isClusterBomb = false;
+    [Tooltip("Dealy before next cluster bombs explode.")]
+    [SerializeField][ShowIf("isClusterBomb", true)] float clusterDelay = 0;
     [Tooltip("Cluster distance from originating explosive.")]
     [SerializeField][ShowIf("isClusterBomb", true)] float clusterRange = 0;
     [Tooltip("Number of additional explosives object created around this object.")]
@@ -56,6 +60,7 @@ public class UniversalExplosive : MonoBehaviour {
 
     bool NotTriggered;
     int RecurringTrigger;
+    MeshRenderer MeshRender;
     SphereCollider ExplosionVolume;
     List<Rigidbody> ExternalBodies;
     float CurrentTimer, CurrentRecursiveDelay;
@@ -67,6 +72,9 @@ public class UniversalExplosive : MonoBehaviour {
         ExplosionVolume.isTrigger = true;
         ExplosionVolume.radius = explosiveRange;
 
+        if (clusterDelay < 0) {
+            clusterDelay = 0;
+        }
         if (clusterRange < 0) {
             clusterRange = 0;
         }
@@ -78,22 +86,6 @@ public class UniversalExplosive : MonoBehaviour {
         }
     }
     #endregion
-
-    void Awake() {
-        NotTriggered = false;
-        ExternalBodies = new List<Rigidbody>();
-        ExplosionVolume = GetComponent<SphereCollider>();
-
-        ExplosionVolume.isTrigger = true;
-        ExplosionVolume.radius = explosiveRange;
-
-        if (isRecursiveBomb) {
-            RecurringTrigger = numberOfRecursion + 1;
-        }
-        else {
-            RecurringTrigger = 1;
-        }
-    }
 
     #region Getters & Setters Methods
     /// <summary>
@@ -227,6 +219,25 @@ public class UniversalExplosive : MonoBehaviour {
         numberOfRecursion = RecursionTimes;
     }
     #endregion
+    private void Awake()
+    {
+        NotTriggered = false;
+        ExternalBodies = new List<Rigidbody>();
+        MeshRender = GetComponent<MeshRenderer>();
+        ExplosionVolume = GetComponent<SphereCollider>();
+
+        ExplosionVolume.isTrigger = true;
+        ExplosionVolume.radius = explosiveRange;
+
+        if (isRecursiveBomb)
+        {
+            RecurringTrigger = numberOfRecursion + 1;
+        }
+        else
+        {
+            RecurringTrigger = 1;
+        }
+    }
 
     /// <summary>
     /// Activating or triggering explosion script.
@@ -262,6 +273,12 @@ public class UniversalExplosive : MonoBehaviour {
             if (explosionEffects != null) {
                 explosionEffects.Play();
             }
+            if (explosionAudio != null) {
+                explosionAudio.Play();
+            }
+            if (a >= RecurringTrigger) {
+                MeshRender.enabled = false;
+            }
 
             // All rigidbodies will be pushed away 
             if (ExternalBodies.Count > 0) {
@@ -278,6 +295,7 @@ public class UniversalExplosive : MonoBehaviour {
             }
 
             if (isClusterBomb) {
+                List<GameObject> ClusterBits = new List<GameObject>();
                 for (int i = 0; i < numberOfCluster; i++) {
                     float Angle = i * Mathf.PI * 2 / numberOfCluster;
                     float X_Pos = Mathf.Cos(Angle) * clusterRange;
@@ -288,13 +306,28 @@ public class UniversalExplosive : MonoBehaviour {
                     Quaternion ClusterRotation = Quaternion.Euler(0, ClusterAngle, 0);
 
                     GameObject ClusterBomb = Instantiate(clusterBombPrefab, ClusterPosition, ClusterRotation);
-                    ClusterBomb.GetComponent<UniversalExplosive>().TriggerExplosion();
+                    ClusterBits.Add(ClusterBomb);
+                }
+
+                float CurrentClusterDelay = clusterDelay;
+                while (CurrentClusterDelay > 0) {
+                    CurrentClusterDelay -= Time.deltaTime;
+                    yield return null;
+                }
+
+                foreach (GameObject Clusteroid in ClusterBits) {
+                    Clusteroid.GetComponent<UniversalExplosive>().TriggerExplosion();
                 }
             }
 
             CurrentRecursiveDelay = recursiveDelay;
         }
 
+        float EffectDelay = explosionEffects.main.duration;
+        while (EffectDelay > 0) {
+            EffectDelay -= Time.deltaTime;
+            yield return null;
+        }
         Destroy(this.gameObject);
     }
 

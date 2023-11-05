@@ -5,318 +5,182 @@ using UnityEngine.UI;
 using ByteAttributes;
 
 /// <summary>
-/// This script manipulates a UI images to create
-/// a visual bar mechanic such as a health bar, &
-/// progress bar. This script will have multiple 
-/// properties to accomidate for the different types
-/// of fill directions, and method of the image
-/// component.
+/// This script manipulates UI elements similar
+/// to a health bar seen in various games. This 
+/// script only allows for the manipulation of
+/// vertical and horizontal bars in a single 
+/// direction.
 /// </summary>
 
 [DisallowMultipleComponent]
+[RequireComponent(typeof(Slider))]
 public class UniversalUIBar : MonoBehaviour {
-    #region Universal UI Bar Enums
-    private enum FillMethod { Horizontal, Vertical, Radial360 }
-    private enum H_FillOrigin { Right, Left }
-    private enum V_FillOrigin { Bottom, Top }
-    private enum R_FillOrigin { Bottom, Right, Top, Left }
-    #endregion
+    public enum FillDirection { Right2Left, Left2Right, Up2Down, Down2Up}
 
     #region Universal UI Bar Properties
-    [Header("Stat Modifier Properties")]
-    [Header("UI Bar Properties")]
-    [Tooltip("Image sprite.")]
-    [SerializeField] Sprite imageSprite = null;
-    [Space(5)]
-    [LineDivider(4, color: LineColors.Black)]
-
-    [Tooltip("Slowly fill the UI bar.")]
-    [SerializeField] bool smoothFillBar = false;
-    [Tooltip("Fill speed of the UI bar.")]
-    [ConditionalHide("SmoothFillBar", true)] [SerializeField] float fillSpeed = 0;
-    [Tooltip("Set the start fill amount.")]
-    [Range(0, 1)] [SerializeField] float startFillPercent = 0.5f;
-    [Space(5)]
-    [LineDivider(4, color: LineColors.Black)]
-
-    [Tooltip("Fill origion from the center.")]
-    [SerializeField] bool fillFromCenter = false;
-    [Tooltip("Flip the fill direction.")]
-    [ConditionalHide("fillFromCenter", true)] [SerializeField] bool flipFillDirection = false;
-    [Tooltip("Have a custom radial UI amount")]
-    [ConditionalEnumHide("fillType", (int)FillMethod.Radial360)] [SerializeField] bool customRadialUI = false;
-    [Tooltip("Set the custom radial amount for the UI.")]
-    [ConditionalHide("customRadialUI", true)] [SerializeField] [Range(0, 360)] int customRadial = 360;
-    [Space(5)]
-    [LineDivider(4, color: LineColors.Black)]
-
-    [Tooltip("Vertical fill bar or horizontal fill bar.")]
-    [SerializeField] FillMethod fillType = FillMethod.Horizontal;
-    [Tooltip("Fill direction of the UI image.")]
-    [ShowIf("fillType", (int)FillMethod.Vertical)] [SerializeField] V_FillOrigin verticalFillOrigin = V_FillOrigin.Bottom;
-    [Tooltip("Fill direction of the UI image.")]
-    [ShowIf("fillType", (int)FillMethod.Horizontal)] [SerializeField] H_FillOrigin horizontalFillOrigin = H_FillOrigin.Left;
-    [Tooltip("Fill direction of the UI image.")]
-    [ShowIf("fillType", (int)FillMethod.Radial360)] [SerializeField] R_FillOrigin radialFillOrigin = R_FillOrigin.Bottom;
-    [Space(5)]
-    [LineDivider(4, color: LineColors.Black)]
-
-    [Tooltip("Allow for over fill.")]
-    [SerializeField] bool canOverFill = false;
-    [ShowIf("canOverFill", true)] [SerializeField] Color overFillColor = Color.blue;
-    [Space(5)]
-    [LineDivider(4, color: LineColors.Black)]
-
-    [Tooltip("Range for positive color on UI bar.")]
-    [SerializeField] [MinMaxRange(0, 1)] Vector2 positiveRange = new Vector2(0.75f, 1f);
-    [Tooltip("Color of UI bar when high.")]
-    [SerializeField] Color positiveColor = Color.green;
-    [Space(5)]
-    [LineDivider(4, color: LineColors.Black)]
-
-    [Tooltip("Range for negative color on UI bar.")]
-    [SerializeField] [MinMaxRange(0, 1)] Vector2 negativeRange = new Vector2(0f, 0.25f);
-    [Tooltip("Color of UI bar when low.")]
-    [SerializeField] Color negativeColor = Color.red;
-
+    [Header("UI Bar Components")]
+    [Tooltip("Sprite for the fill bar.")]
+    [SerializeField] [NotNullable] Sprite fillSprite = null;
+    [Tooltip("Sprite for the holder bar.")]
+    [SerializeField] [NotNullable] Sprite containerSprite = null;
     [Space(10)]
-    [Tooltip("List of images for UI bar.")]
-    [SerializeField] private List<Image> UI_Images = new List<Image>(2);
+    [Tooltip("Primary sprite for the UI Bar.")]
+    [SerializeField] [NotNullable] RectTransform fillRect = null;
+    [Tooltip("Secondary sprite that contains the fill bar.")]
+    [SerializeField] [NotNullable] RectTransform containerRect = null;
+    [Space(15)] [LineDivider(4, color: LineColors.Black)]
+    [Header("UI Fill Properties")]
+    [Tooltip("Color of fill bar based on fill amount.")]
+    [SerializeField] Gradient fillBarGradient = null;
+    [Space(10)]
+    [Tooltip("Smoothing speed to fill the UI bar.")]
+    [SerializeField] [MinValue(0)] float fillSpeed = 0;
+    [SerializeField] [Range(0f, 1f)] float fillRatio = 1;
+    [Tooltip("Direction of how the UI bar will be filled.")]
+    [SerializeField] FillDirection fillDirection = FillDirection.Right2Left;
 
-    Gradient UIBarGradient;
-    GradientColorKey[] ColorKeys;
-    GradientAlphaKey[] AlphaKeys;
+    Slider SliderComponent;
 
-    float RadialLimit = 0;
-    float CurrentFillPercent = 0;
-    #endregion
-
-    #region UI Bar Fill Methods
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     private void OnValidate() {
-        // Set color gradient for UI bar
-        UIBarGradient = new Gradient();
+        SliderComponent = GetComponent<Slider>();
 
-        // Clamp values
-        if (fillSpeed < 0) {
-            fillSpeed = 0;
+        SliderComponent.interactable = false;
+        SliderComponent.transition = Selectable.Transition.None;
+        SliderComponent.navigation = Navigation.defaultNavigation;
+        switch (fillDirection) { 
+            case FillDirection.Up2Down:
+                SliderComponent.direction = Slider.Direction.BottomToTop;
+                break;
+            case FillDirection.Down2Up:
+                SliderComponent.direction = Slider.Direction.TopToBottom;
+                break;
+            case FillDirection.Right2Left:
+                SliderComponent.direction = Slider.Direction.LeftToRight;
+                break;
+            case FillDirection.Left2Right:
+                SliderComponent.direction = Slider.Direction.RightToLeft;
+                break;
         }
 
-        // Set gradient colors
-        ColorKeys = new GradientColorKey[4];
-        ColorKeys[0].color = negativeColor;
-        ColorKeys[0].time = negativeRange.x;
-        ColorKeys[1].color = negativeColor;
-        ColorKeys[1].time = negativeRange.y;
-        ColorKeys[2].color = positiveColor;
-        ColorKeys[2].time = positiveRange.x;
-        ColorKeys[3].color = positiveColor;
-        ColorKeys[3].time = positiveRange.y;
+        SliderComponent.fillRect = fillRect;
+        fillRect.GetComponent<Image>().sprite = fillSprite;
+        fillRect.GetComponent<Image>().type = Image.Type.Sliced;
+        containerRect.GetComponent<Image>().sprite = containerSprite;
 
-        // Set gradient alphas
-        AlphaKeys = new GradientAlphaKey[4];
-        AlphaKeys[0].alpha = 1.0f;
-        AlphaKeys[0].time = negativeRange.x;
-        AlphaKeys[1].alpha = 5.0f;
-        AlphaKeys[1].time = negativeRange.y;
-        AlphaKeys[2].alpha = 5.0f;
-        AlphaKeys[2].time = positiveRange.x;
-        AlphaKeys[3].alpha = 1.0f;
-        AlphaKeys[3].time = positiveRange.y;
-
-        UIBarGradient.SetKeys(ColorKeys, AlphaKeys);
-
-        // Setup UI bar for every UI image element
-        for (int i = 0; i < UI_Images.Count; i++) {
-            UI_Images[i].sprite = imageSprite;
-            UI_Images[i].type = Image.Type.Filled;
-            if (fillType == FillMethod.Radial360 && customRadialUI) {
-                float RadialFill = (float)customRadial / 360f;
-                CurrentFillPercent = (RadialFill * startFillPercent) * (360f / (float)customRadial);
-                UI_Images[i].fillAmount = RadialFill * startFillPercent;
-
-                RadialLimit = RadialFill;
-            }
-            else {
-                CurrentFillPercent = startFillPercent;
-                UI_Images[i].fillAmount = startFillPercent;
-            }
-
-            switch (fillType) {
-                case FillMethod.Vertical:
-                    UI_Images[i].fillMethod = Image.FillMethod.Vertical;
-                    break;
-                case FillMethod.Horizontal:
-                    UI_Images[i].fillMethod = Image.FillMethod.Horizontal;
-                    break;
-                case FillMethod.Radial360:
-                    UI_Images[i].fillMethod = Image.FillMethod.Radial360;
-                    break;
-            }
-
-            UI_Images[i].color = UIBarGradient.Evaluate(CurrentFillPercent);
-
-            if (startFillPercent > positiveRange.x) {
-                UI_Images[i].color = positiveColor;
-            }
-            else if (startFillPercent < negativeRange.y) {
-                UI_Images[i].color = negativeColor;
-            }
-
-            if (fillFromCenter) {
-                if (i % 2 == 0) {
-                    if (fillType == FillMethod.Radial360) {
-                        RadialFillDirection(i,flipFillDirection);
-                    }
-                    else {
-                        BarFillDirection(i, flipFillDirection);
-                    }
-                }
-                else {
-                    if (fillType == FillMethod.Radial360) {
-                        RadialFillDirection(i, !flipFillDirection);
-                    }
-                    else {
-                        BarFillDirection(i, !flipFillDirection);
-                    }
-                }
-            }
-            else {
-                if (fillType == FillMethod.Radial360) {
-                    RadialFillDirection(i, flipFillDirection);
-                }
-                else {
-                    BarFillDirection(i, flipFillDirection);
-                }
-            }
-        }
+        SliderComponent.value = fillRatio;
+        Color FillColor = fillBarGradient.Evaluate(fillRatio);
+        fillRect.GetComponent<Image>().color = FillColor;
     }
+    #endregion
 
+    #region Getters and Setters
     /// <summary>
-    /// Determines fill direction for bar type UI
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="flip"></param>
-    void BarFillDirection(int index, bool flip) {
-        if (fillFromCenter) {
-            switch (fillType) {
-                case FillMethod.Vertical:
-                    if (flip) {
-                        UI_Images[index].fillOrigin = (int)Image.OriginVertical.Top;
-                    }
-                    else {
-                        UI_Images[index].fillOrigin = (int)Image.OriginVertical.Bottom;
-                    }
-                    break;
-                case FillMethod.Horizontal:
-                    if (flip) {
-                        UI_Images[index].fillOrigin = (int)Image.OriginHorizontal.Left;
-                    }
-                    else {
-                        UI_Images[index].fillOrigin = (int)Image.OriginHorizontal.Right;
-                    }
-                    break;
-            }
-        }
-        else {
-            switch (fillType) {
-                case FillMethod.Vertical:
-                    UI_Images[index].fillOrigin = (int)verticalFillOrigin;
-                    break;
-                case FillMethod.Horizontal:
-                    UI_Images[index].fillOrigin = (int)horizontalFillOrigin;
-                    break;
-            }
-        }
-    }
-    /// <summary>
-    /// Determines fill direction for radial type UI
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="flip"></param>
-    void RadialFillDirection(int index, bool flip) {
-        UI_Images[index].fillClockwise = flip;
-        UI_Images[index].fillOrigin = (int)radialFillOrigin;
-    }
-
-    /// <summary>
-    /// Getter for fill capacity
+    /// Get the fill direction of the UI bar.
     /// </summary>
     /// <returns></returns>
-    public float GetCurrentFill() {
-        return CurrentFillPercent;
+    public FillDirection GetFillDirection() {
+        return fillDirection;
     }
     /// <summary>
-    /// Setter for fill capacity
+    /// Set the fill direction of the UI bar.
     /// </summary>
-    /// <param name="SetFill"></param>
-    public void SetCurrentFill(float SetFill) {
-        CurrentFillPercent = SetFill;
+    /// <param name="FillDirection"></param>
+    public void SetFillDirection(FillDirection FillDirection) {
+        fillDirection = FillDirection;
+        switch (fillDirection) {
+            case FillDirection.Up2Down:
+                SliderComponent.direction = Slider.Direction.BottomToTop;
+                break;
+            case FillDirection.Down2Up:
+                SliderComponent.direction = Slider.Direction.TopToBottom;
+                break;
+            case FillDirection.Right2Left:
+                SliderComponent.direction = Slider.Direction.LeftToRight;
+                break;
+            case FillDirection.Left2Right:
+                SliderComponent.direction = Slider.Direction.RightToLeft;
+                break;
+        }
     }
 
     /// <summary>
-    /// Main fill function and logic
+    /// Get the smooth fill speed of the UI bar.
     /// </summary>
-    /// <param name="FillAmount"></param>
     /// <returns></returns>
-    public IEnumerator Fill_UI_Bar(float FillAmount) {
-        float Counter = 0;
+    public float GetFillSpeed() { 
+        return fillSpeed;
+    }
+    /// <summary>
+    /// Set the smooth fill speed of the UI bar.
+    /// </summary>
+    /// <param name="FillSpeed"></param>
+    public void SetFillSpeed(float FillSpeed) { 
+        fillSpeed = FillSpeed;
+    }
 
-        // Checks to see the fill are within boundries
-        CurrentFillPercent += FillAmount;
-
-        
-
-        if (fillType == FillMethod.Radial360) {
-            if (CurrentFillPercent >= 1 && !canOverFill) {
-                CurrentFillPercent = 1;
-            }
+    /// <summary>
+    /// Get the fill ratio for the UI bar and color.
+    /// </summary>
+    /// <returns></returns>
+    public float GetFillRatio() {
+        return fillRatio;
+    }
+    /// <summary>
+    /// Set the fill ratio for the UI bar and color.
+    /// </summary>
+    /// <param name="Fill_Ratio"></param>
+    public void SetFillRatio(float Fill_Ratio) {
+        fillRatio = Fill_Ratio;
+        if (fillRatio > 1) {
+            fillRatio = 1;
         }
-        else {
-            if (CurrentFillPercent >= 1 && !canOverFill) {
-                CurrentFillPercent = 1;
-            }
-        }
-        if (CurrentFillPercent <= 0) {
-            CurrentFillPercent = 0;
-        }
-
-        if (smoothFillBar) {
-            while (Counter < fillSpeed) {
-                Counter += Time.deltaTime;
-                foreach (Image i in UI_Images) {
-                    float NextFill;
-                    if (fillType == FillMethod.Radial360) {
-                        NextFill = CurrentFillPercent / (360f / (float)customRadial);
-                    }
-                    else {
-                        NextFill = CurrentFillPercent;
-                    }
-
-                    i.fillAmount = Mathf.Lerp(i.fillAmount, NextFill, Time.deltaTime);
-
-                    if (canOverFill && CurrentFillPercent > positiveRange.y) {
-                        i.color = overFillColor;
-                    }
-                    else if (CurrentFillPercent <= positiveRange.y) {
-                        i.color = UIBarGradient.Evaluate(CurrentFillPercent);
-                    }
-                }
-                yield return null;
-            }
-        }
-        else {
-            foreach (Image i in UI_Images) {
-                i.fillAmount = CurrentFillPercent;
-
-                if (CurrentFillPercent > 1 && canOverFill) {
-                    i.color = overFillColor;
-                }
-                else {
-                    i.color = UIBarGradient.Evaluate(CurrentFillPercent);
-                }
-            }
+        else if (fillRatio < 0) {
+            fillRatio = 0;
         }
     }
     #endregion
+
+    /// <summary>
+    /// Instantiate and define the script, this must be called during Start.
+    /// </summary>
+    public void Instantiate_UIBar() {
+        SliderComponent = GetComponent<Slider>();
+
+        SliderComponent.interactable = false;
+        SliderComponent.transition = Selectable.Transition.None;
+        SliderComponent.navigation = Navigation.defaultNavigation;
+        switch (fillDirection) {
+            case FillDirection.Up2Down:
+                SliderComponent.direction = Slider.Direction.BottomToTop;
+                break;
+            case FillDirection.Down2Up:
+                SliderComponent.direction = Slider.Direction.TopToBottom;
+                break;
+            case FillDirection.Right2Left:
+                SliderComponent.direction = Slider.Direction.LeftToRight;
+                break;
+            case FillDirection.Left2Right:
+                SliderComponent.direction = Slider.Direction.RightToLeft;
+                break;
+        }
+
+        SliderComponent.fillRect = fillRect;
+        fillRect.GetComponent<Image>().sprite = fillSprite;
+        fillRect.GetComponent<Image>().type = Image.Type.Sliced;
+        containerRect.GetComponent<Image>().sprite = containerSprite;
+
+        SliderComponent.value = fillRatio;
+        Color FillColor = fillBarGradient.Evaluate(fillRatio);
+        fillRect.GetComponent<Image>().color = FillColor;
+    }
+
+    /// <summary>
+    /// Updates the fill bar and color of bar, this must be called during update.
+    /// </summary>
+    public void UpdateFill_UI() {
+        Color FillColor = fillBarGradient.Evaluate(fillRatio);
+        SliderComponent.value = Mathf.Lerp(SliderComponent.value, fillRatio, fillSpeed * Time.deltaTime);
+        fillRect.GetComponent<Image>().color = Color.Lerp(fillRect.GetComponent<Image>().color, FillColor, fillSpeed * Time.deltaTime);
+    }
 }
